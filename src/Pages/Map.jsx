@@ -48,6 +48,8 @@ const Map = () => {
             ref={mapContainer}
             style={{ height: '100%', width: '100%' }}
         />
+
+        
     );
 };
 

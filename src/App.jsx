@@ -1,4 +1,4 @@
-import Map from './Map';
+import Map from './Pages/Map';
 import './App.css';
 
 function App() {

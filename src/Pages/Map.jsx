@@ -14,7 +14,7 @@ const Map = () => {
     useEffect(() => {
         if (mapInstance.current) return;
 
-        mapInstance.current = L.map(mapContainer.current).setView([51.505, -0.09], 13);
+        mapInstance.current = L.map(mapContainer.current).setView([-7.771337528683765, 110.3774982677273], 20);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -43,14 +43,17 @@ const Map = () => {
         };
     }, []);
 
-    return (
-        <div
-            ref={mapContainer}
-            style={{ height: '100%', width: '100%' }}
-        />
+   return (
+   <div className="app-layout">
+      <div className="sidebar">
+        <div className="memory-sidebar"></div>
+        <div className="plan-menu">
+        </div>
+      </div>
 
-        
-    );
+      <div ref={mapContainer} className="map-container" />
+    </div>
+  );
 };
 
 export default Map;

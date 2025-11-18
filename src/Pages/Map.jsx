@@ -5,6 +5,7 @@ import '../Pages/Map.css'
 
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
+
 import '@geoman-io/leaflet-geoman-free';
 
 const Map = () => {
@@ -38,6 +39,21 @@ const Map = () => {
                     lng: e.latlng.lng.toFixed(6),
                 });
             });
+        });
+        mapInstance.current.pm.addControls({
+            position: 'topleft',
+            oneBlock: true,
+            drawMarker: true,
+            drawCircleMarker: true,
+            drawPolyline: true,
+            drawRectangle: true,
+            drawPolygon: true,
+            drawCircle: true,
+            editMode: true,
+            dragMode: true,
+            cutPolygon: true,
+            removalMode: true,
+            drawText: true,
         });
 
         return () => {

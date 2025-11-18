@@ -1,13 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
-import '../App.css';
+import '../App.css'
 
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 
 import '@geoman-io/leaflet-geoman-free';
 
-const Map = () => {
+const Simulator = () => {
     const mapContainer = useRef(null); // Ref to the DOM element
     const mapInstance = useRef(null);  // Ref to store the map instance
 
@@ -54,4 +54,4 @@ const Map = () => {
     );
 };
 
-export default Map;
+export default Simulator;

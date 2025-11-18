@@ -9,7 +9,7 @@ const App = () => {
         <Route path='/' element={<MapPage />} />
         <Route path='/SImulator' element={<Simulator />}/>
     </Routes>
-  )
+  ) 
 }
 
 export default App

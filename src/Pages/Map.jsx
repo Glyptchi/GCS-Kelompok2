@@ -2,9 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import '../App.css';
 
+import SwitchToSimulator from "../components/SwitchToSimulator";
+
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-
 import '@geoman-io/leaflet-geoman-free';
 
 const Map = () => {
@@ -21,7 +22,7 @@ const Map = () => {
         }).addTo(mapInstance.current);
 
         mapInstance.current.pm.addControls({
-            position: 'topleft',
+            position: 'topright',
             drawMarker: true,
             drawCircleMarker: true,
             drawPolyline: true,
@@ -35,6 +36,17 @@ const Map = () => {
             drawText: true,
         });
 
+        mapInstance.current.zoomControl.remove();
+
+        const geomanControls = document.querySelector('.leaflet-pm-toolbar');
+
+        if (geomanControls) {
+        const sidebarTarget = document.querySelector('.plan-menu');
+
+           sidebarTarget.appendChild(geomanControls);
+        }
+        
+
         return () => {
             if (mapInstance.current) {
                 mapInstance.current.remove();
@@ -46,14 +58,19 @@ const Map = () => {
    return (
    <div className="app-layout">
       <div className="sidebar">
-        <div className="memory-sidebar"></div>
+        <div className="switch-memory-sidebar">
+            <SwitchToSimulator />
+        </div>
         <div className="plan-menu">
         </div>
       </div>
 
       <div ref={mapContainer} className="map-container" />
     </div>
+    
   );
+
+  
 };
 
 export default Map;

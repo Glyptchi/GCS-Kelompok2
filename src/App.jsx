@@ -1,11 +1,15 @@
+import React from 'react'
+import {Routes, Route, Link, Router} from 'react-router-dom'
 import Map from './Pages/Map';
+import Simulator from './Pages/Simulator';
 import './App.css';
 
-function App() {
+const App =() => {
     return (
-        <div className="App">
-            <Map />
-        </div>
+        <Routes>
+            <Route path='/' element={<Map/>}></Route>
+            <Route path='/simulator' element={<Simulator/>}></Route>
+        </Routes>
     )
 }
 

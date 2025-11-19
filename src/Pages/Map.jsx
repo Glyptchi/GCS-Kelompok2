@@ -1,76 +1,78 @@
-import React, { useEffect, useRef } from 'react';
-import L from 'leaflet';
-import '../App.css';
+import React, { useEffect, useRef, useState } from "react";
+import L from "leaflet";
+import "../App.css";
+
+import "leaflet/dist/leaflet.css";
+import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
+import "@geoman-io/leaflet-geoman-free";
 
 import SwitchToSimulator from "../components/SwitchToSimulator";
-
-import 'leaflet/dist/leaflet.css';
-import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-import '@geoman-io/leaflet-geoman-free';
+import GeomanTools from "../components/GeomanTools";
 
 const Map = () => {
-    const mapContainer = useRef(null); // Ref to the DOM element
-    const mapInstance = useRef(null);  // Ref to store the map instance
+  const mapContainer = useRef(null);
+  const mapRef = useRef(null);   // ← PENTING: map disimpan di ref, bukan state
+  const [ready, setReady] = useState(false); // untuk render tools setelah map fix
 
-    useEffect(() => {
-        if (mapInstance.current) return;
+  useEffect(() => {
+    if (mapRef.current) return; // jangan buat 2x
 
-        mapInstance.current = L.map(mapContainer.current).setView([-7.771337528683765, 110.3774982677273], 20);
+    // 1. Buat map
+    const map = L.map(mapContainer.current, {
+      zoomControl: false,
+    }).setView([-7.771337528683765, 110.3774982677273], 20);
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapInstance.current);
+    mapRef.current = map;
 
-        mapInstance.current.pm.addControls({
-            position: 'topright',
-            drawMarker: true,
-            drawCircleMarker: true,
-            drawPolyline: true,
-            drawRectangle: true,
-            drawPolygon: true,
-            drawCircle: true,
-            editMode: true,
-            dragMode: true,
-            cutPolygon: true,
-            removalMode: true,
-            drawText: true,
-        });
+    // 2. Basemap
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
-        mapInstance.current.zoomControl.remove();
+    // 3. Disable semua toolbar geoman
+    map.pm.addControls({
+      drawMarker: false,
+      drawCircleMarker: false,
+      drawPolyline: false,
+      drawRectangle: false,
+      drawPolygon: false,
+      drawCircle: false,
+      editMode: false,
+      dragMode: false,
+      cutPolygon: false,
+      removalMode: false,
+      drawText: false,
+    });
 
-        const geomanControls = document.querySelector('.leaflet-pm-toolbar');
+    // remove leftover DOM
+    const toolbar = document.querySelector(".leaflet-pm-toolbar");
+    if (toolbar) toolbar.remove();
 
-        if (geomanControls) {
-        const sidebarTarget = document.querySelector('.plan-menu');
+    // 4. Baru izinkan render toolbar custom
+    setReady(true);
 
-           sidebarTarget.appendChild(geomanControls);
-        }
-        
+    return () => {
+      map.remove();
+    };
+  }, []);
 
-        return () => {
-            if (mapInstance.current) {
-                mapInstance.current.remove();
-                mapInstance.current = null;
-            }
-        };
-    }, []);
-
-   return (
-   <div className="app-layout">
+  return (
+    <div className="app-layout">
       <div className="sidebar">
+
+        {/* WHITE SIDEBAR */}
         <div className="switch-memory-sidebar">
-            <SwitchToSimulator />
+          <SwitchToSimulator />
         </div>
+
+        {/* BLUE SIDEBAR */}
         <div className="plan-menu">
+          {ready && <GeomanTools map={mapRef.current} />}
         </div>
       </div>
 
+      {/* MAP */}
       <div ref={mapContainer} className="map-container" />
     </div>
-    
   );
-
-  
 };
 
 export default Map;

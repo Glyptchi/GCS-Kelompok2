@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import SimulatorIcon from "../assets/Simulator.svg";
 import "./SwitchButton.css";
+import Simulator from "../Pages/SImulator";
 
 const SwitchToSimulator = () => {
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ const SwitchToSimulator = () => {
       </div>
 
       <div className="switch-right">
-        <img src={SimulatorIcon} className="switch-icon" />
+        <img src={`../src/assets/Simulator.svg`} className="switch-icon" />
         <div className="switch-text">
           <span>SIMULATOR</span>
         </div>

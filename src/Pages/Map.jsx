@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import '../App.css';
 import '../Pages/Map.css'
+import LongLat from '../Components/LongLat';
 
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
@@ -31,7 +32,6 @@ const Map = () => {
             position: 'topleft'
         });
 
-        // Aman => listener setelah map ready
         mapInstance.current.whenReady(() => {
             mapInstance.current.on("mousemove", (e) => {
                 setCoords({
@@ -70,28 +70,10 @@ const Map = () => {
             <div className='map-container'
                 ref={mapContainer}
             />
-            <div className="card-wrapper">
-                <div className="card1">
-                    <h4 className='status'>Plane Status</h4>
-                    <div className="longlat-row">
-                        <span>Longitude:</span>
-                        <span>{coords.lng ?? "-"}</span>
-                    </div>
-                    <div className="longlat-row">
-                        <span>Latitude:</span>
-                        <span>{coords.lat ?? "-"}</span>
-                    </div>
-                    <div className="recording">
-                        <span>Recording</span>
-                    </div>
-                </div>
+            <div>
+                <LongLat coords={coords}/>
+            </div>
 
-                <div className='kompas'>
-                    <button className='kompas-btn'>
-                        <img src='https://img.icons8.com/?size=100&id=2o-uXx1sRKa7&format=png&color=000000' alt='Kompas'></img>
-                    </button>
-                </div>
-            </div> 
         </>
     );
 };

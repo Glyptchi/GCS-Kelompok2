@@ -17,13 +17,15 @@
     width: 220px;
 }
 
-.longlat-row {
+.longlat-row {;
+    font-family: 'Helvetica', sans-serif;
     display: flex;
     justify-content: space-between;
     width: 100%;
 }
 
 .status {
+    font-family: 'Helvetica', sans-serif;
     margin-top: 0;
     margin-bottom: 10px;
     display: flex;

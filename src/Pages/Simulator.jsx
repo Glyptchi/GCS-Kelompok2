@@ -1,15 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import '../App.css';
-import IconUAV from "../components/IconUAV.jsx";
+import IconUAV from "../Components/IconUAV.jsx";
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import '@geoman-io/leaflet-geoman-free';
 import {polyline} from "leaflet/src/layer/index.js";
+import LongLat from "../Components/LongLat.jsx";
 
 const Simulator = () => {
     const mapContainer = useRef(null); // Ref to the DOM element
     const mapInstance = useRef(null);  // Ref to store the map instance
+    const [coords, setCoords] = useState({ lat: null, lng: null });
     // const untuk UAV
     const markerUAV = useRef(null);
     const keysPressed = useRef({});
@@ -24,16 +26,29 @@ const Simulator = () => {
     useEffect(() => {
         if (mapInstance.current) return;
 
-        mapInstance.current = L.map(mapContainer.current).setView([-7.782610551443376, 110.36709686929], 13);
+        mapInstance.current = L.map(mapContainer.current, {zoomControl: false}).setView([-7.782610551443376, 110.36709686929], 16);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mapInstance.current);
+
+        L.control.zoom({
+            position: 'bottomright'
         }).addTo(mapInstance.current);
 
         markerUAV.current = L.marker([-7.782610551443376, 110.36709686929],{
             icon: IconUAV(0),
             pmIgnore: true // biar di ignore move tool dari geoman
         }).addTo(mapInstance.current);
+
+        mapInstance.current.whenReady(() => {
+            mapInstance.current.on("mousemove", (e) => {
+                setCoords({
+                    lat: e.latlng.lat.toFixed(6),
+                    lng: e.latlng.lng.toFixed(6),
+                });
+            });
+        });
 
         mapInstance.current.pm.addControls({
             position: 'topleft',
@@ -52,6 +67,7 @@ const Simulator = () => {
 
         return () => {
             if (mapInstance.current) {
+                mapInstance.current.off();
                 mapInstance.current.remove();
                 mapInstance.current = null;
             }
@@ -162,12 +178,15 @@ const Simulator = () => {
     },[])
 
     return (
-        <div
-            ref={mapContainer}
-            style={{ height: '100%', width: '100%' }}
-        />
-
-
+        <>
+            <div
+                ref={mapContainer}
+                style={{ height: '100%', width: '100%' }}
+            />
+            <div>
+                <LongLat coords={coords}/>
+            </div>
+        </>
     );
 };
 

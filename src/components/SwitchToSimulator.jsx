@@ -8,7 +8,7 @@ const SwitchToSimulator = () => {
 
   return (
     <div className="switch-btn-container" onClick={() => navigate("/Simulator")}>
-      <div className="switch-left">
+      <div className="switch-left" onClick={() => navigate("/Simulator")}>
         <span>SWITCH TO</span>
       </div>
 

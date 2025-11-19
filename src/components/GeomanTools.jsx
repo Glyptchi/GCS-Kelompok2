@@ -1,7 +1,21 @@
 import React, { useEffect } from "react";
 import "./GeomanTools.css";
+import { Marker } from "leaflet";
 
 const ICON = "../src/assets/Dummy.svg";
+const DrawMarker = "../src/assets/Marker.svg";
+const DrawPolyline = "../src/assets/PolyLine.svg";
+const DrawRectangle = "../src/assets/Rectangle.svg";
+const DrawPolygon = "../src/assets/Polygon.svg";
+const DrawCircle = "../src/assets/DrawCircle.svg";
+const DrawCircleMarker = "../src/assets/DrawCircleMarker.svg";
+const Text = "../src/assets/Text.svg";
+const Edit = "../src/assets/EditLayers.svg";
+const Drag = "../src/assets/DragLayers.svg";
+const Cut = "../src/assets/CutLayers.svg";
+const Remove = "../src/assets/RemoveLayers.svg";
+const Rotate = "../src/assets/RotateLayers.svg";
+
 
 const GeomanTools = ({ map }) => {
   useEffect(() => {
@@ -30,20 +44,20 @@ const GeomanTools = ({ map }) => {
     <div className="gm-toolbar">
 
       {/* DRAW */}
-      <img id="gm-marker" className="gm-icon" src={ICON} title="Draw Marker" />
-      <img id="gm-polyline" className="gm-icon" src={ICON} title="Draw Polyline" />
-      <img id="gm-rectangle" className="gm-icon" src={ICON} title="Draw Rectangle" />
-      <img id="gm-polygon" className="gm-icon" src={ICON} title="Draw Polygon" />
-      <img id="gm-circle" className="gm-icon" src={ICON} title="Draw Circle" />
-      <img id="gm-circlemarker" className="gm-icon" src={ICON} title="Draw Circle Marker" />
-      <img id="gm-text" className="gm-icon" src={ICON} title="Draw Text" />
+      <img id="gm-marker" className="gm-icon" src={DrawMarker} title="Draw Marker" />
+      <img id="gm-polyline" className="gm-icon" src={DrawPolyline} title="Draw Polyline" />
+      <img id="gm-rectangle" className="gm-icon" src={DrawRectangle} title="Draw Rectangle" />
+      <img id="gm-polygon" className="gm-icon" src={DrawPolygon} title="Draw Polygon" />
+      <img id="gm-circle" className="gm-icon" src={DrawCircle} title="Draw Circle" />
+      <img id="gm-circlemarker" className="gm-icon" src={DrawCircleMarker} title="Draw Circle Marker" />
+      <img id="gm-text" className="gm-icon" src={Text} title="Draw Text" />
 
       {/* TOOLS */}
-      <img id="gm-edit" className="gm-icon" src={ICON} title="Edit Layers" />
-      <img id="gm-drag" className="gm-icon" src={ICON} title="Drag Layers" />
-      <img id="gm-cut" className="gm-icon" src={ICON} title="Cut Layers" />
-      <img id="gm-remove" className="gm-icon" src={ICON} title="Remove Layers" />
-      <img id="gm-rotate" className="gm-icon" src={ICON} title="Rotate Layers" />
+      <img id="gm-edit" className="gm-icon" src={Edit} title="Edit Layers" />
+      <img id="gm-drag" className="gm-icon" src={Drag} title="Drag Layers" />
+      <img id="gm-cut" className="gm-icon" src={Cut} title="Cut Layers" />
+      <img id="gm-remove" className="gm-icon" src={Remove} title="Remove Layers" />
+      <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers" />
 
     </div>
   );

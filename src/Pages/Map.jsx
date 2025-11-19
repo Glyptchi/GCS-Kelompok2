@@ -1,13 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import L from 'leaflet';
 import '../App.css';
-
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
-
 import '@geoman-io/leaflet-geoman-free';
 
-const Map = () => {
+const Map = ({ onMapInit }) => {
     const mapContainer = useRef(null); // Ref to the DOM element
     const mapInstance = useRef(null);  // Ref to store the map instance
 
@@ -35,21 +33,23 @@ const Map = () => {
             drawText: true,
         });
 
+        if (onMapInit) {
+            onMapInit(mapInstance.current);
+        }
+
         return () => {
             if (mapInstance.current) {
                 mapInstance.current.remove();
                 mapInstance.current = null;
             }
         };
-    }, []);
+    }, [onMapInit]);
 
     return (
         <div
             ref={mapContainer}
             style={{ height: '100%', width: '100%' }}
         />
-
-        
     );
 };
 

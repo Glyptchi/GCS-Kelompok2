@@ -72,7 +72,7 @@ const Map = () => {
             />
 
             <div className="card1">
-                <h4 className='status'>Plan Status</h4>
+                <h4 className='status'>Plane Status</h4>
                 <div className="longlat-row">
                     <span>Longitude:</span>
                     <span>{coords.lng ?? "-"}</span>
@@ -80,6 +80,9 @@ const Map = () => {
                 <div className="longlat-row">
                     <span>Latitude:</span>
                     <span>{coords.lat ?? "-"}</span>
+                </div>
+                <div className="recording">
+                    <span>Recording</span>
                 </div>
             </div>
                 

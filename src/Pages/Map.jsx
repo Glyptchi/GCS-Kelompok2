@@ -33,7 +33,7 @@ const Map = () => {
 
     // 1️⃣ Create map
     const map = L.map(mapContainer.current, { zoomControl: false })
-      .setView([-7.771337528683765, 110.3774982677273], 16);
+      .setView([-7.771337528683765, 110.3774982677273], 18);
 
     // IMPORTANT: set mapRef **SEBELUM** yang lain
     mapRef.current = map;
@@ -89,8 +89,51 @@ const Map = () => {
       setReady(true);
     }, 150);
 
+    const handleKey = (e) => {
+
+      if (
+        document.activeElement.tagName === "INPUT" ||
+        document.activeElement.tagName === "TEXTAREA" ||
+      document.activeElement.isContentEditable
+      ) {
+        return; // lagi ngetik → jangan trigger hotkey
+      }
+
+      if (e.key === "1") {
+        document.getElementById("gm-marker")?.click();
+      } else if (e.key === "2") {
+        document.getElementById("gm-polyline")?.click();
+      } else if (e.key === "3") {
+        document.getElementById("gm-rectangle")?.click();
+      } else if (e.key === "4") {
+        document.getElementById("gm-polygon")?.click();
+      } else if (e.key === "5") {
+        document.getElementById("gm-circle")?.click();
+      } else if (e.key === "6") {
+        document.getElementById("gm-circlemarker")?.click();
+      } else if (e.key === "7") {
+        document.getElementById("gm-text")?.click();
+      } else if (e.key === "8") {
+        document.getElementById("gm-edit")?.click();
+      } else if (e.key === "9") {
+        document.getElementById("gm-drag")?.click();
+      } else if (e.key === "Escape") {
+        const map = mapRef.current;
+        if (!map) return;
+
+        map.pm.disableDraw();
+        map.pm.disableGlobalEditMode();
+        map.pm.disableGlobalDragMode();
+        map.pm.disableGlobalRemovalMode();
+      }
+  };
+    window.addEventListener("keydown", handleKey);
+
     // Cleanup
     return () => {
+
+      window.removeEventListener("keydown", handleKey);
+
       if (mapRef.current) {
         mapRef.current.off();
         mapRef.current.remove();

@@ -90,6 +90,12 @@ const Simulator = () => {
                 if (!isTrail.current) {
                     currentPolyline.current = null;
                 }
+            } else if (e.key === '+' || e.key === '=') {
+                mapInstance.current?.zoomIn();
+            } else if (e.key === '-' || e.key === '_') {
+                mapInstance.current?.zoomOut();
+            } else if (e.key === '0') {
+                mapInstance.current?.setView([-7.771337528683765, 110.3774982677273], 17);
             }
         };
 

@@ -1,7 +1,6 @@
 .gm-toolbar {
   display: flex;
-  flex-direction: column;
-  gap: 18px;
+  flex-direction: column; 
   width: 100%;
   align-items: center;
 }
@@ -10,7 +9,7 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  padding: 8px;
+  padding: 4px;
   border-radius: 8px;
   background-color: #1b2a4b;
   transition: 0.1s ease;

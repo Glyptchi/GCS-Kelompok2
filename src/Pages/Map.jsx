@@ -117,7 +117,7 @@ const Map = () => {
         document.getElementById("gm-circle")?.click();
       } else if (e.key === "6") {
         document.getElementById("gm-circlemarker")?.click();
-      } else if (e.key === "7") {
+      } else if (e.key === "T"|| e.key === "t") {
         document.getElementById("gm-text")?.click();
       } else if (e.key === "E"|| e.key === "e") {
         document.getElementById("gm-edit")?.click();

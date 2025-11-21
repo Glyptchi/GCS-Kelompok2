@@ -1,25 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "../App.css";
-import LongLat from "../components/LongLat";
 
 import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
 import "@geoman-io/leaflet-geoman-free";
 
+import LongLat from "../components/LongLat";
 import SwitchToSimulator from "../components/SwitchToSimulator";
 import GeomanTools from "../components/GeomanTools";
-
-// Fix issue default Leaflet marker not loading in Vite
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
 
 const Map = () => {
   const mapContainer = useRef(null);
@@ -33,7 +22,7 @@ const Map = () => {
 
     // 1️⃣ Create map
     const map = L.map(mapContainer.current, { zoomControl: false })
-      .setView([-7.771337528683765, 110.3774982677273], 16);
+      .setView([-7.771337528683765, 110.3774982677273], 17);
 
     // IMPORTANT: set mapRef **SEBELUM** yang lain
     mapRef.current = map;
@@ -105,14 +94,11 @@ const Map = () => {
         <div className="switch-memory-sidebar">
           <SwitchToSimulator />
         </div>
-
         <LongLat coords={coords} />
-
         <div className="plan-menu">
           {ready && <GeomanTools map={mapRef.current} />}
         </div>
       </div>
-
       <div ref={mapContainer} className="map-container" />
     </div>
   );

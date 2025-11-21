@@ -7,6 +7,9 @@ import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import '@geoman-io/leaflet-geoman-free';
 import {polyline} from "leaflet/src/layer/index.js";
 import LongLat from "../components/LongLat.jsx";
+import SidebarSim from "../components/SidebarSim.jsx";  // 
+import SwitchToPlanner from "../components/SwitchToPlanner.jsx";
+
 
 const Simulator = () => {
     const mapContainer = useRef(null); // Ref to the DOM element
@@ -26,7 +29,7 @@ const Simulator = () => {
     useEffect(() => {
         if (mapInstance.current) return;
 
-        mapInstance.current = L.map(mapContainer.current, {zoomControl: false}).setView([-7.782610551443376, 110.36709686929], 16);
+        mapInstance.current = L.map(mapContainer.current, {zoomControl: false}).setView([-7.771337528683765, 110.3774982677273], 17);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -36,7 +39,7 @@ const Simulator = () => {
             position: 'bottomright'
         }).addTo(mapInstance.current);
 
-        markerUAV.current = L.marker([-7.782610551443376, 110.36709686929],{
+        markerUAV.current = L.marker([-7.771337528683765, 110.3774982677273],{
             icon: IconUAV(0),
             pmIgnore: true // biar di ignore move tool dari geoman
         }).addTo(mapInstance.current);
@@ -52,17 +55,18 @@ const Simulator = () => {
 
         mapInstance.current.pm.addControls({
             position: 'topleft',
-            drawMarker: true,
-            drawCircleMarker: true,
-            drawPolyline: true,
-            drawRectangle: true,
-            drawPolygon: true,
-            drawCircle: true,
-            editMode: true,
-            dragMode: true,
-            cutPolygon: true,
-            removalMode: true,
-            drawText: true,
+            drawMarker: false,
+            drawCircleMarker: false,
+            drawPolyline: false,
+            drawRectangle: false,
+            drawPolygon: false,
+            drawCircle: false,
+            editMode: false,
+            dragMode: false,
+            cutPolygon: false,
+            removalMode: false,
+            drawText: false,
+            rotateLayers: false,
         });
 
         return () => {
@@ -177,17 +181,27 @@ const Simulator = () => {
         return () => cancelAnimationFrame(animationFrameId);
     },[])
 
-    return (
-        <>
-            <div
-                ref={mapContainer}
-                style={{ height: '100%', width: '100%' }}
-            />
-            <div>
-                <LongLat coords={coords}/>
-            </div>
-        </>
-    );
+return (
+  <div className="app-layout">
+
+    <div className="sidebar">
+
+      <div className="switch-memory-sidebar">
+        <SwitchToPlanner />
+      </div>
+
+      <LongLat coords={coords} />
+
+      <div className="plan-menu">
+        <SidebarSim />
+      </div>
+
+    </div>
+
+    <div ref={mapContainer} className="map-container" />
+  </div>
+);
+
 };
 
 export default Simulator;

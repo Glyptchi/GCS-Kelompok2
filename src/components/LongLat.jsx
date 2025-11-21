@@ -1,4 +1,6 @@
-import React from 'react'
+import React from 'react';
+
+const Compass = "../src/assets/Kompas.svg";
 
 const LongLat = ({coords}) => {
   return (
@@ -6,16 +8,16 @@ const LongLat = ({coords}) => {
     <div className="card-wrapper"> 
     {/* LongLat */}
         <div className="card1">
-            <h4 className='status'>Plane Status</h4>
-            <div className="longlat-row">
+            <h4 style={{color:'#23315A'}} className='status'>Plane Status</h4>
+            <div style={{color:'#23315A'}} className="longlat-row">
                 <span>Longitude:</span>
                 <span>{coords.lng ?? "-"}</span>
             </div>
-            <div className="longlat-row">
+            <div style={{color:'#23315A'}}className="longlat-row">
                 <span>Latitude:</span>
                 <span>{coords.lat ?? "-"}</span>
             </div>
-            <div className="recording">
+            <div style={{color:'#23315A'}} className="recording">
                 <span>Recording</span>
             </div>
         </div>
@@ -23,7 +25,7 @@ const LongLat = ({coords}) => {
         {/*Kompas*/}
         <div className='kompas'>
             <button className='kompas-btn'>
-                <img src='https://img.icons8.com/?size=100&id=2o-uXx1sRKa7&format=png&color=000000' alt='Kompas'></img>
+                <img src={Compass} alt='Kompas'></img>
             </button>
         </div>
     </div> 

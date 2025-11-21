@@ -9,7 +9,7 @@ import "@geoman-io/leaflet-geoman-free";
 
 import SwitchToSimulator from "../components/SwitchToSimulator";
 import GeomanTools from "../components/GeomanTools";
-import { setMap } from "../components/MapStore";
+import { setMap, getMap } from "../components/MapStore";
 
 // Fix issue default Leaflet marker not loading in Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -86,21 +86,20 @@ const Map = () => {
       });
     });
 
-    // 7️⃣ Force redraw after mount
+    //Force redraw after mount
     setTimeout(() => {
       map.invalidateSize();
       setReady(true);
     }, 150);
 
+    {/*Keyboarding*/}
     const handleKey = (e) => {
 
       if (
         document.activeElement.tagName === "INPUT" ||
         document.activeElement.tagName === "TEXTAREA" ||
-      document.activeElement.isContentEditable
-      ) {
-        return; // lagi ngetik → jangan trigger hotkey
-      }
+        document.activeElement.isContentEditable
+  ) return;
 
       if (e.key === "1") {
         document.getElementById("gm-marker")?.click();
@@ -116,21 +115,35 @@ const Map = () => {
         document.getElementById("gm-circlemarker")?.click();
       } else if (e.key === "7") {
         document.getElementById("gm-text")?.click();
-      } else if (e.key === "8") {
+      } else if (e.key === "E"|| e.key === "e") {
         document.getElementById("gm-edit")?.click();
-      } else if (e.key === "9") {
+      } else if (e.key === "M"|| e.key === "m") {
         document.getElementById("gm-drag")?.click();
       } else if (e.key === "Escape") {
+
         const map = mapRef.current;
         if (!map) return;
-
         map.pm.disableDraw();
         map.pm.disableGlobalEditMode();
         map.pm.disableGlobalDragMode();
         map.pm.disableGlobalRemovalMode();
+      } else if (e.key === "K"|| e.key === "k") {
+        const map = getMap();
+        if (!map) return;
+        map.setView([-7.771337528683765, 110.3774982677273], 18);
+      } else if (e.key === "+"|| e.key === "=") {
+        map.zoomIn();
+      } else if (e.key === "-"|| e.key === "_") {
+        map.zoomOut();
+      } else if (e.key === "C"|| e.key === "c") {
+        document.getElementById("gm-cut")?.click();
+      } else if (e.key === "R"|| e.key === "r") {
+        document.getElementById("gm-rotate")?.click();
+      } else if (e.key === "D"|| e.key === "d") {
+        document.getElementById("gm-remove")?.click();
       }
-
   };
+
     window.addEventListener("keydown", handleKey);
 
     // Cleanup

@@ -9,6 +9,7 @@ import "@geoman-io/leaflet-geoman-free";
 
 import SwitchToSimulator from "../components/SwitchToSimulator";
 import GeomanTools from "../components/GeomanTools";
+import { setMap } from "../components/MapStore";
 
 // Fix issue default Leaflet marker not loading in Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -34,6 +35,8 @@ const Map = () => {
     // 1️⃣ Create map
     const map = L.map(mapContainer.current, { zoomControl: false })
       .setView([-7.771337528683765, 110.3774982677273], 18);
+
+    setMap(map);
 
     // IMPORTANT: set mapRef **SEBELUM** yang lain
     mapRef.current = map;
@@ -126,6 +129,7 @@ const Map = () => {
         map.pm.disableGlobalDragMode();
         map.pm.disableGlobalRemovalMode();
       }
+
   };
     window.addEventListener("keydown", handleKey);
 

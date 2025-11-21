@@ -1,12 +1,12 @@
 import React from 'react'
-import { getMap } from '../components/MapStore';
+import { mapRef } from '../Pages/Map';
 
 const LongLat = ({coords}) => {
   
     const handleClick = () => {
         const map = getMap();
         if (!map) return;         // biar ga error kalau belum ready
-        map.setView([-7.771337528683765, 110.3774982677273], 18);
+        map.setView([-7.771337528683765, 110.3774982677273], 17);
     };
 
   return (
@@ -30,7 +30,11 @@ const LongLat = ({coords}) => {
 
         {/*Kompas*/}
         <div className='kompas'>
-            <button className='kompas-btn' onClick={handleClick}>
+            <button className='kompas-btn' onClick={() => {
+                const map = mapRef.current;
+                if (!map) return;
+                map.setView([-7.771337528683765, 110.3774982677273], 17);;   // langsung panggil setView di sini
+            }}>
                 <img src='https://img.icons8.com/?size=100&id=2o-uXx1sRKa7&format=png&color=000000' alt='Kompas'></img>
             </button>
         </div>

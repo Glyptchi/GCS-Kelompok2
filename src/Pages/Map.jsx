@@ -9,7 +9,8 @@ import "@geoman-io/leaflet-geoman-free";
 
 import SwitchToSimulator from "../components/SwitchToSimulator";
 import GeomanTools from "../components/GeomanTools";
-import { setMap, getMap } from "../components/MapStore";
+
+export const mapRef = { current: null };
 
 // Fix issue default Leaflet marker not loading in Vite
 delete L.Icon.Default.prototype._getIconUrl;
@@ -24,7 +25,6 @@ L.Icon.Default.mergeOptions({
 
 const Map = () => {
   const mapContainer = useRef(null);
-  const mapRef = useRef(null);
 
   const [ready, setReady] = useState(false);
   const [coords, setCoords] = useState({ lat: null, lng: null });
@@ -34,9 +34,7 @@ const Map = () => {
 
     // 1️⃣ Create map
     const map = L.map(mapContainer.current, { zoomControl: false })
-      .setView([-7.771337528683765, 110.3774982677273], 18);
-
-    setMap(map);
+      .setView([-7.771337528683765, 110.3774982677273], 17);
 
     // IMPORTANT: set mapRef **SEBELUM** yang lain
     mapRef.current = map;
@@ -127,16 +125,17 @@ const Map = () => {
         document.getElementById("gm-drag")?.click();
       } else if (e.key === "Escape") {
 
-        const map = mapRef.current;
+      const map = mapRef.current;
         if (!map) return;
         map.pm.disableDraw();
         map.pm.disableGlobalEditMode();
         map.pm.disableGlobalDragMode();
         map.pm.disableGlobalRemovalMode();
+        
       } else if (e.key === "0"|| e.key === ")") {
-        const map = getMap();
+        const map = mapRef.current;
         if (!map) return;
-        map.setView([-7.771337528683765, 110.3774982677273], 18);
+        map.setView([-7.771337528683765, 110.3774982677273], 17);
       } else if (e.key === "+"|| e.key === "=") {
         map.zoomIn();
       } else if (e.key === "-"|| e.key === "_") {

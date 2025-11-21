@@ -1,17 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import PlanIcon from "../assets/MissionPlanner.svg";  
+import PlanIcon from "../assets/MissionPlanner.svg";
 
 import "./SwitchButton.css";
 
-const SwitchToSimulator = () => {
+const SwitchToPlanner = () => {
   const navigate = useNavigate();
 
   return (
-    <button className="switch-icon-btn" onClick={() => navigate("/")}>
-      <img src={PlanIcon} alt="sim" />
+    <button className="switch-icon-btn" title= "Planner Mode" onClick={() => navigate("/")}>
+      <img src={PlanIcon} alt="planner" />
     </button>
   );
 };
 
-export default SwitchToSimulator;
+export default SwitchToPlanner;

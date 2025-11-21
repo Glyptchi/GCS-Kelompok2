@@ -1,0 +1,34 @@
+.sim-tools-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.sim-tools-top {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+
+.sim-tools-bottom {
+  margin-top: auto;
+  margin-bottom: 20px;   
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+}
+
+.sim-icon {
+  width: 20px;
+  height: 20px;
+  padding: 8px;
+  border-radius: 8px;
+  background-color: #1b2a4b;
+  cursor: pointer;
+}
+.sim-icon:hover {
+  background-color: #324777;
+}

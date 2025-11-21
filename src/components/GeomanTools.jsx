@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import "./GeomanTools.css";
 import { Marker } from "leaflet";
 
-const ICON = "../src/assets/Dummy.svg";
 const DrawMarker = "../src/assets/Marker.svg";
 const DrawPolyline = "../src/assets/PolyLine.svg";
 const DrawRectangle = "../src/assets/Rectangle.svg";
@@ -42,22 +41,28 @@ const GeomanTools = ({ map }) => {
 
   return (
     <div className="gm-toolbar">
-
-      {/* DRAW */}
-      <img id="gm-marker" className="gm-icon" src={DrawMarker} title="Draw Marker" />
+    <div className="gm-toolbar-top">
+      <span style={{color : 'white', fontFamily : 'Helvetica', fontSize : '80%' }}>Draw</span>
+      <img id="gm-marker" className="gm-icon" src={DrawMarker} title="Draw Marker"/>
       <img id="gm-polyline" className="gm-icon" src={DrawPolyline} title="Draw Polyline" />
       <img id="gm-rectangle" className="gm-icon" src={DrawRectangle} title="Draw Rectangle" />
       <img id="gm-polygon" className="gm-icon" src={DrawPolygon} title="Draw Polygon" />
       <img id="gm-circle" className="gm-icon" src={DrawCircle} title="Draw Circle" />
       <img id="gm-circlemarker" className="gm-icon" src={DrawCircleMarker} title="Draw Circle Marker" />
       <img id="gm-text" className="gm-icon" src={Text} title="Draw Text" />
-
-      {/* TOOLS */}
+      <span> </span>
+      <span style={{color : 'white', fontFamily : 'Helvetica', fontSize : '80%'}}>Tools</span>
       <img id="gm-edit" className="gm-icon" src={Edit} title="Edit Layers" />
       <img id="gm-drag" className="gm-icon" src={Drag} title="Drag Layers" />
       <img id="gm-cut" className="gm-icon" src={Cut} title="Cut Layers" />
       <img id="gm-remove" className="gm-icon" src={Remove} title="Remove Layers" />
       <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers" />
+    </div>
+
+    <div className="gm-toolbar-bottom">
+      <img className="gm-icon" src="/src/assets/Save.svg" />
+      <img className="gm-icon" src="/Dummy.svg" />
+    </div>
 
     </div>
   );

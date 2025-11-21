@@ -92,6 +92,12 @@ const Map = () => {
       setReady(true);
     }, 150);
 
+    const undo = () => {
+      const layers = map.pm.getGeomanLayers();
+      const last = layers[layers.length - 1];
+      if (last) last.remove();
+    };
+
     {/*Keyboarding*/}
     const handleKey = (e) => {
 
@@ -99,7 +105,7 @@ const Map = () => {
         document.activeElement.tagName === "INPUT" ||
         document.activeElement.tagName === "TEXTAREA" ||
         document.activeElement.isContentEditable
-  ) return;
+      ) return;
 
       if (e.key === "1") {
         document.getElementById("gm-marker")?.click();
@@ -127,7 +133,7 @@ const Map = () => {
         map.pm.disableGlobalEditMode();
         map.pm.disableGlobalDragMode();
         map.pm.disableGlobalRemovalMode();
-      } else if (e.key === "K"|| e.key === "k") {
+      } else if (e.key === "0"|| e.key === ")") {
         const map = getMap();
         if (!map) return;
         map.setView([-7.771337528683765, 110.3774982677273], 18);
@@ -141,6 +147,8 @@ const Map = () => {
         document.getElementById("gm-rotate")?.click();
       } else if (e.key === "D"|| e.key === "d") {
         document.getElementById("gm-remove")?.click();
+      } else if ((e.key === "Z" || e.key === "z") && (e.ctrlKey || e.metaKey)) {
+        undo();
       }
   };
 

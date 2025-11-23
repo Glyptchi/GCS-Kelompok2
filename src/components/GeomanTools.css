@@ -1,7 +1,6 @@
 .gm-toolbar {
   display: flex;
-  flex-direction: column;
-  gap: 18px;
+  flex-direction: column; 
   width: 100%;
   align-items: center;
 }

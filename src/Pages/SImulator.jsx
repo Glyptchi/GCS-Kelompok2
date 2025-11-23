@@ -44,14 +44,6 @@ const Simulator = () => {
             pmIgnore: true // biar di ignore move tool dari geoman
         }).addTo(mapInstance.current);
 
-        mapInstance.current.whenReady(() => {
-            mapInstance.current.on("mousemove", (e) => {
-                setCoords({
-                    lat: e.latlng.lat.toFixed(6),
-                    lng: e.latlng.lng.toFixed(6),
-                });
-            });
-        });
 
         mapInstance.current.pm.addControls({
             position: 'topleft',
@@ -162,6 +154,11 @@ const Simulator = () => {
 
                 // Untuk perintah menggerakan IconUAV
                 markerUAV.current.setLatLng(newPos);
+
+                setCoords({
+                    lat: newPos.lat.toFixed(6),
+                    lng: newPos.lng.toFixed(6),
+                });
 
                 // update IconUav berdasarkan Rotasi sekarang
                 markerUAV.current.setIcon(IconUAV(headingDeg));

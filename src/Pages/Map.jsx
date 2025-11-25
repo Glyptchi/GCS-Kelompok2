@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import "../App.css";
+import "../App.css"
 
 import "leaflet/dist/leaflet.css";
 import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
@@ -9,6 +9,8 @@ import "@geoman-io/leaflet-geoman-free";
 import LongLat from "../components/LongLat";
 import SwitchToSimulator from "../components/SwitchToSimulator";
 import GeomanTools from "../components/GeomanTools";
+import CRUD from "../components/CRUD";
+import Save from "../assets/Save.svg";
 
 export const mapRef = { current: null };
 
@@ -172,6 +174,9 @@ const Map = () => {
         <div className="switch-memory-sidebar">
           <SwitchToSimulator />
         </div>
+        <div>
+          <CRUD /se>
+        </div>
         <LongLat coords={coords} />
         <div className="plan-menu">
           {ready && <GeomanTools map={mapRef.current} />}
@@ -179,6 +184,7 @@ const Map = () => {
       </div>
       <div ref={mapContainer} className="map-container" />
     </div>
+    
   );
 };
 

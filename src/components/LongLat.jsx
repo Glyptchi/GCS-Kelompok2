@@ -7,7 +7,7 @@ const LongLat = ({coords}) => {
   
     const handleClick = () => {
         const map = getMap();
-        if (!map) return;         // biar ga error kalau belum ready
+        if (!map) return;
         map.setView([-7.771337528683765, 110.3774982677273], 17);
     };
 

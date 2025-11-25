@@ -39,6 +39,35 @@ const GeomanTools = ({ map }) => {
     click("gm-rotate", () => map.pm.enableGlobalRotateMode());
   }, [map]);
 
+const handleSave = async () => {
+  if (!map) return;
+
+  const layers = map.pm.getGeomanLayers();
+
+  // convert semua layer ke GeoJSON
+  const geojson = layers.map(layer => layer.toGeoJSON());
+
+  const name = prompt("Nama mission?");
+
+  if (!name) return;
+
+  try {
+    await fetch("http://localhost:3000/missions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name,
+        data: geojson
+      })
+    });
+
+    alert("Mission saved!");
+  } catch (err) {
+    alert("Error saving mission");
+  }
+};
+
+
   return (
     <div className="gm-toolbar">
     <div className="gm-toolbar-top">
@@ -60,7 +89,7 @@ const GeomanTools = ({ map }) => {
     </div>
 
     <div className="gm-toolbar-bottom">
-      <img className="gm-icon" src="/src/assets/Save.svg" />
+      <img className="gm-icon" src="/src/assets/Save.svg" onClick={handleSave} />
       <img className="gm-icon" src="/Dummy.svg" />
     </div>
 

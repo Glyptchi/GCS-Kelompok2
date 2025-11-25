@@ -9,6 +9,7 @@ import "@geoman-io/leaflet-geoman-free";
 import LongLat from "../components/LongLat";
 import SwitchToSimulator from "../components/SwitchToSimulator";
 import GeomanTools from "../components/GeomanTools";
+import MissionList from "../components/MissionList.jsx";
 
 export const mapRef = { current: null };
 
@@ -166,16 +167,47 @@ const Map = () => {
     };
   }, []);
 
+const loadMission = (mission) => {
+  const map = mapRef.current;
+
+  // clear semua layer kecuali tile
+  map.eachLayer(layer => {
+    if (!layer._url) layer.remove();
+  });
+
+  const geojson = JSON.parse(mission.data);
+
+  L.geoJSON(geojson, {
+    onEachFeature: (feature, layer) => {
+      layer.addTo(map);
+    }
+  });
+
+  alert("Loaded mission: " + mission.name);
+};
+
+
   return (
     <div className="app-layout">
       <div className="sidebar">
         <div className="switch-memory-sidebar">
-          <SwitchToSimulator />
+            <SwitchToSimulator />
+            {ready && (
+              <MissionList
+                onLoad={loadMission}
+              />
+            )}
+          
         </div>
         <LongLat coords={coords} />
         <div className="plan-menu">
-          {ready && <GeomanTools map={mapRef.current} />}
+          {ready && (
+            <>
+            <GeomanTools map={mapRef.current} />
+          </>
+          )}
         </div>
+
       </div>
       <div ref={mapContainer} className="map-container" />
     </div>

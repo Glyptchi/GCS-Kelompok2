@@ -16,6 +16,7 @@ html, body, #root {
   width: 15%;
   height: 100%;
   display: flex;    
+  flex-direction: row;
   overflow: hidden;
 }
 
@@ -25,7 +26,13 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding-top: 150px;
+  overflow-y: auto;   
+  margin-left: 20px;
+  margin-right: 20px;
+  overflow: hidden;
 }
+
 
 
 .plan-menu{

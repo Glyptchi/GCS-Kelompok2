@@ -72,20 +72,20 @@ const handleSave = async () => {
     <div className="gm-toolbar">
     <div className="gm-toolbar-top">
       <span style={{color : 'white', fontFamily : 'Helvetica', fontSize : '80%' }}>Draw</span>
-      <img id="gm-marker" className="gm-icon" src={DrawMarker} title="Draw Marker"/>
-      <img id="gm-polyline" className="gm-icon" src={DrawPolyline} title="Draw Polyline" />
-      <img id="gm-rectangle" className="gm-icon" src={DrawRectangle} title="Draw Rectangle" />
-      <img id="gm-polygon" className="gm-icon" src={DrawPolygon} title="Draw Polygon" />
-      <img id="gm-circle" className="gm-icon" src={DrawCircle} title="Draw Circle" />
-      <img id="gm-circlemarker" className="gm-icon" src={DrawCircleMarker} title="Draw Circle Marker" />
-      <img id="gm-text" className="gm-icon" src={Text} title="Draw Text" />
+      <img id="gm-marker" className="gm-icon" src={DrawMarker} title="Draw Marker (1)"/>
+      <img id="gm-polyline" className="gm-icon" src={DrawPolyline} title="Draw Polyline (2)" />
+      <img id="gm-rectangle" className="gm-icon" src={DrawRectangle} title="Draw Rectangle (3)" />
+      <img id="gm-polygon" className="gm-icon" src={DrawPolygon} title="Draw Polygon (4)" />
+      <img id="gm-circle" className="gm-icon" src={DrawCircle} title="Draw Circle (5)" />
+      <img id="gm-circlemarker" className="gm-icon" src={DrawCircleMarker} title="Draw Circle Marker (6)" />
+      <img id="gm-text" className="gm-icon" src={Text} title="Draw Text (T)" />
       <span> </span>
       <span style={{color : 'white', fontFamily : 'Helvetica', fontSize : '80%'}}>Tools</span>
-      <img id="gm-edit" className="gm-icon" src={Edit} title="Edit Layers" />
-      <img id="gm-drag" className="gm-icon" src={Drag} title="Drag Layers" />
-      <img id="gm-cut" className="gm-icon" src={Cut} title="Cut Layers" />
-      <img id="gm-remove" className="gm-icon" src={Remove} title="Remove Layers" />
-      <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers" />
+      <img id="gm-edit" className="gm-icon" src={Edit} title="Edit Layers (E)" />
+      <img id="gm-drag" className="gm-icon" src={Drag} title="Drag Layers (M)" />
+      <img id="gm-cut" className="gm-icon" src={Cut} title="Cut Layers (C)" />
+      <img id="gm-remove" className="gm-icon" src={Remove} title="Delete Layers (D)" />
+      <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers (R)" />
     </div>
 
     <div className="gm-toolbar-bottom">

@@ -26,7 +26,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 150px;
+  padding-top: 100px;
   overflow-y: auto;   
   margin-left: 20px;
   margin-right: 20px;

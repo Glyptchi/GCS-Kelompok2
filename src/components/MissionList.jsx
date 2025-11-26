@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+const Cari = "../src/assets/Cari.svg";
+
 const MissionList = ({ onLoad, onRename, onDelete }) => {
   const [missions, setMissions] = useState([]);
 
@@ -41,13 +43,38 @@ const MissionList = ({ onLoad, onRename, onDelete }) => {
   };
 
   return (
+    
     <div style={{
       width: "100%",
       padding: "15px",
       fontFamily: "Helvetica",
       color: "#23315A"
     }}>
-      <h3 style={{ marginBottom: "10px" }}>Mission Saves</h3>
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        width: "100%",
+        maxWidth: "100%",
+        overflow: "hidden",
+      }}>
+        <img src={ Cari } style={{
+          marginLeft: 0,
+          width: 20,
+          height: 20,
+          }}/>
+        <input type="text" placeholder="Cari plan..." style={{
+        border: "none",
+        minWidth: 0,
+        boxSizing: "border-box",
+        background: "transparent",
+        flex: 1,
+        marginLeft: 3,
+        fontSize: "15px"
+        }}
+        />
+      </div>
+
+      <h3 style={{ marginBottom: "10px", marginTop: "10px", }}>Mission Saves</h3>
 
       {missions.map((m) => (
         <div key={m.id}

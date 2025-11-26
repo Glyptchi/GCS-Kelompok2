@@ -4,6 +4,7 @@ const Cari = "../src/assets/Cari.svg";
 
 const MissionList = ({ onLoad, onRename, onDelete }) => {
   const [missions, setMissions] = useState([]);
+  const [search, setSearch] = useState("");
 
   // Load missions dari backend
   const fetchMissions = async () => {
@@ -62,21 +63,33 @@ const MissionList = ({ onLoad, onRename, onDelete }) => {
           width: 20,
           height: 20,
           }}/>
-        <input type="text" placeholder="Cari plan..." style={{
-        border: "none",
-        minWidth: 0,
-        boxSizing: "border-box",
-        background: "transparent",
-        flex: 1,
-        marginLeft: 3,
-        fontSize: "15px"
+        <input type="text" placeholder="Cari plan..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{
+          border: "none",
+          minWidth: 0,
+          boxSizing: "border-box",
+          background: "transparent",
+          flex: 1,
+          marginLeft: 3,
+          fontSize: "16px"
         }}
         />
       </div>
 
       <h3 style={{ marginBottom: "10px", marginTop: "10px", }}>Mission Saves</h3>
 
-      {missions.map((m) => (
+  {missions
+  .filter(m =>
+    m.name.toLowerCase().includes(search.toLowerCase())
+  )
+  .sort((a, b) => {
+    const sa = a.name.toLowerCase().indexOf(search.toLowerCase());
+    const sb = b.name.toLowerCase().indexOf(search.toLowerCase());
+    return sa - sb;
+  })
+  .map((m) => (
         <div key={m.id}
           style={{
             display: "flex",

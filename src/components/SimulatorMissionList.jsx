@@ -80,41 +80,91 @@ const SimulatorMissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) =>
 
             <h3 style={{ marginBottom: "10px", marginTop: "10px", }}>Simulator Saves</h3>
 
-            {missions
-                .filter(m =>
-                    m.name.toLowerCase().includes(search.toLowerCase())
-                )
-                .sort((a, b) => {
-                    const sa = a.name.toLowerCase().indexOf(search.toLowerCase());
-                    const sb = b.name.toLowerCase().indexOf(search.toLowerCase());
-                    return sa - sb;
-                })
-                .map((m) => (
-                    <div key={m.id}
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: "8px 10px",
-                            background: "#f7f8fa",
-                            borderRadius: "6px",
-                            marginBottom: "8px",
-                            cursor: "pointer"
-                        }}
-                    >
-                        {/* LOAD mission */}
-                        <span onClick={() => onLoad(m)}>{m.name}</span>
+            {missions.map((m) => (
+  <div key={m.id}
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "8px 10px",
+      background: "#f7f8fa",
+      borderRadius: "6px",
+      marginBottom: "8px",
+      position: "relative"   // penting untuk menu floating
+    }}
+  >
+    {/* LOAD mission */}
+    <span onClick={() => onLoad(m)}>{m.name}</span>
 
-                        {/* menu button */}
-                        <div style={{ cursor: "pointer", fontSize: "20px" }}>
-                            <span onClick={() => {
-                                const act = prompt("1 = Rename\n2 = Delete");
-                                if (act === "1") handleRename(m);
-                                if (act === "2") handleDelete(m);
-                            }}>⋮</span>
-                        </div>
-                    </div>
-                ))}
+    {/* titik tiga + menu */}
+    <div style={{ cursor: "pointer", fontSize: "20px", position: "relative" }}>
+      <span
+        onClick={(e) => {
+          e.stopPropagation();
+          setMissions(prev =>
+            prev.map(x =>
+              x.id === m.id ? { ...x, showMenu: !x.showMenu } : { ...x, showMenu: false }
+            )
+          );
+        }}
+      >
+        ⋮
+      </span>
+
+      {/* MENU KECIL */}
+      {m.showMenu && (
+        <div style={{
+          position: "absolute",
+          right: 0,
+          top: "25px",
+          background: "white",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          borderRadius: "6px",
+          padding: "5px 0",
+          zIndex: 10,
+          width: "110px"
+        }}>
+          <div
+            onClick={() => handleRename(m)}
+            style={{
+              padding: "6px 12px",
+              cursor: "pointer",
+              fontSize: "14px",
+              color: "#23315A",
+              borderBottom: "1px solid #eee"
+            }}
+          >
+            Rename
+          </div>
+
+        <div
+          style={{
+              padding: "6px 12px",
+              cursor: "pointer",
+              fontSize: "14px",
+              color: "#23315A",
+              borderBottom: "1px solid #eee"
+            }}
+          >
+            Edit
+          </div>
+
+          <div
+            onClick={() => handleDelete(m)}
+            style={{
+              padding: "6px 12px",
+              cursor: "pointer",
+              fontSize: "14px",
+              color: "red"
+            }}
+          >
+            Delete
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+))}
         </div>
     );
 }

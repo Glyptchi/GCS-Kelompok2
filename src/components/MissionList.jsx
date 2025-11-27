@@ -1,21 +1,27 @@
 import React, { useEffect, useState } from "react";
 
+
 const Cari = "../src/assets/Cari.svg";
 
-const MissionList = ({ onLoad, onRename, onDelete }) => {
+const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
   const [missions, setMissions] = useState([]);
   const [search, setSearch] = useState("");
 
   // Load missions dari backend, sekarang hanya ambil tipe plan
   const fetchMissions = async () => {
-    const res = await fetch("http://localhost:3000/missions?type=plan");
-    const data = await res.json();
-    setMissions(data);
-  };
+  const res = await fetch("http://localhost:3000/missions");
+  const data = await res.json();
+
+  const withMenu = data.map(m => ({ ...m, showMenu: false }));
+  setMissions(withMenu);
+};
+
 
   useEffect(() => {
     fetchMissions();
-  }, []);
+  }, [refreshTrigger]);
+
+
 
   const handleRename = async (m) => {
     const newName = prompt("Rename mission:", m.name);
@@ -24,7 +30,7 @@ const MissionList = ({ onLoad, onRename, onDelete }) => {
     await fetch(`http://localhost:3000/missions/${m.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName, data: JSON.parse(m.data) })
+      body: JSON.stringify({ name: newName, data: m.data })
     });
 
     fetchMissions();
@@ -56,7 +62,6 @@ const MissionList = ({ onLoad, onRename, onDelete }) => {
         alignItems: "center",
         width: "100%",
         maxWidth: "100%",
-        overflow: "hidden",
       }}>
         <img src={Cari} style={{
           marginLeft: 0,
@@ -80,41 +85,93 @@ const MissionList = ({ onLoad, onRename, onDelete }) => {
 
       <h3 style={{ marginBottom: "10px", marginTop: "10px", }}>Mission Saves</h3>
 
-      {missions
-        .filter(m =>
-          m.name.toLowerCase().includes(search.toLowerCase())
-        )
-        .sort((a, b) => {
-          const sa = a.name.toLowerCase().indexOf(search.toLowerCase());
-          const sb = b.name.toLowerCase().indexOf(search.toLowerCase());
-          return sa - sb;
-        })
-        .map((m) => (
-          <div key={m.id}
+      {missions.map((m) => (
+  <div key={m.id}
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: "8px 10px",
+      background: "#f7f8fa",
+      borderRadius: "6px",
+      marginBottom: "8px",
+      position: "relative"   // penting untuk menu floating
+    }}
+  >
+    {/* LOAD mission */}
+    <span style={{ cursor: "pointer"}} onClick={() => onLoad(m)}>{m.name}</span>
+
+    {/* titik tiga + menu */}
+    <div style={{ cursor: "pointer", fontSize: "20px", position: "relative" }}>
+      <span
+        onClick={(e) => {
+          e.stopPropagation();
+          setMissions(prev =>
+            prev.map(x =>
+              x.id === m.id ? { ...x, showMenu: !x.showMenu } : { ...x, showMenu: false }
+            )
+          );
+        }}
+      >
+        ⋮
+      </span>
+
+      {/* MENU KECIL */}
+      {m.showMenu && (
+        <div style={{
+          position: "absolute",
+          right: 0,
+          top: "25px",
+          background: "white",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+          borderRadius: "6px",
+          padding: "5px 0",
+          zIndex: 10,
+          width: "110px"
+        }}>
+          <div
+            onClick={() => handleRename(m)}
             style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "8px 10px",
-              background: "#f7f8fa",
-              borderRadius: "6px",
-              marginBottom: "8px",
-              cursor: "pointer"
+              padding: "6px 12px",
+              cursor: "pointer",
+              fontSize: "14px",
+              color: "#23315A",
+              borderBottom: "1px solid #eee"
             }}
           >
-            {/* LOAD mission */}
-            <span onClick={() => onLoad(m)}>{m.name}</span>
-
-            {/* menu button */}
-            <div style={{ cursor: "pointer", fontSize: "20px" }}>
-              <span onClick={() => {
-                const act = prompt("1 = Rename\n2 = Delete");
-                if (act === "1") handleRename(m);
-                if (act === "2") handleDelete(m);
-              }}>⋮</span>
-            </div>
+            Rename
           </div>
-        ))}
+
+          <div
+          style={{
+              padding: "6px 12px",
+              cursor: "pointer",
+              fontSize: "14px",
+              color: "#23315A",
+              borderBottom: "1px solid #eee"
+            }}
+          >
+            Edit
+          </div>
+
+          <div
+            onClick={() => handleDelete(m)}
+            style={{
+              padding: "6px 12px",
+              cursor: "pointer",
+              fontSize: "14px",
+              color: "red"
+            }}
+          >
+            Delete
+          </div>
+
+        </div>
+      )}
+    </div>
+  </div>
+))}
+
     </div>
   );
 }

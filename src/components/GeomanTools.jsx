@@ -91,7 +91,6 @@ const GeomanTools = ({ map, type = 'plan' }) => {
 
       <div className="gm-toolbar-bottom">
         <img className="gm-icon" src="/src/assets/Save.svg" onClick={handleSave} />
-        <img className="gm-icon" src="/Dummy.svg" />
       </div>
 
     </div>

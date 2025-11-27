@@ -80,7 +80,6 @@ html, body, #root {
 }
 
 .longlat-row {
-    color: gray;
     font-family: 'Helvetica', sans-serif;
     display: flex;
     justify-content: space-between;
@@ -98,7 +97,6 @@ html, body, #root {
 }
 
 .recording {
-    color: gray;
     font-family: 'Helvetica', sans-serif;
     display: flex;
     justify-content: space-between;

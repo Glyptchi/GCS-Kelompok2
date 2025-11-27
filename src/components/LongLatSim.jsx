@@ -17,7 +17,7 @@ const LongLat = ({coords}) => {
     <div className="card-wrapper"> 
     {/* LongLat */}
         <div className="card1">
-            <h4 style={{color:'#23315A'}} className='status'>Plan Status</h4>
+            <h4 style={{color:'#23315A'}} className='status'>Plane Status</h4>
             <div style={{color:'#23315A'}} className="longlat-row">
                 <span>Longitude:</span>
                 <span>{coords.lng ?? "-"}</span>
@@ -25,6 +25,9 @@ const LongLat = ({coords}) => {
             <div style={{color:'#23315A'}}className="longlat-row">
                 <span>Latitude:</span>
                 <span>{coords.lat ?? "-"}</span>
+            </div>
+            <div style={{color:'#23315A'}}className='recording'>
+                <span>Recording</span>
             </div>
         </div>
 

@@ -94,7 +94,7 @@ const SimulatorMissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) =>
     }}
   >
     {/* LOAD mission */}
-    <span onClick={() => onLoad(m)}>{m.name}</span>
+    <span style={{ cursor: "pointer"}} onClick={() => onLoad(m)}>{m.name}</span>
 
     {/* titik tiga + menu */}
     <div style={{ cursor: "pointer", fontSize: "20px", position: "relative" }}>

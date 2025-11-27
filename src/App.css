@@ -30,7 +30,7 @@ html, body, #root {
   overflow-y: auto;   
   margin-left: 20px;
   margin-right: 20px;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 

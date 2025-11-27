@@ -29,6 +29,7 @@ const Map = () => {
 
   const [ready, setReady] = useState(false);
   const [coords, setCoords] = useState({ lat: null, lng: null });
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     if (mapRef.current) return;
@@ -175,7 +176,9 @@ const Map = () => {
       if (!layer._url) layer.remove();
     });
 
-    const geojson = JSON.parse(mission.data);
+    const geojson = typeof mission.data === "string"
+    ? JSON.parse(mission.data)
+    : mission.data;
 
     L.geoJSON(geojson, {
       onEachFeature: (feature, layer) => {
@@ -195,6 +198,7 @@ const Map = () => {
           {ready && (
             <MissionList
               onLoad={loadMission}
+              refreshTrigger = {refreshTrigger}
             />
           )}
 
@@ -203,7 +207,11 @@ const Map = () => {
         <div className="plan-menu">
           {ready && (
             <>
-              <GeomanTools map={mapRef.current} type="plan" /> {/* sekarang ambil plan*/}
+              <GeomanTools
+              map={mapRef.current}
+              type="plan"
+              onSaved = {() => setRefreshTrigger(prev => prev + 1)}
+              /> {/* sekarang ambil plan*/}
             </>
           )}
         </div>

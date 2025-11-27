@@ -16,7 +16,7 @@ const Remove = "../src/assets/RemoveLayers.svg";
 const Rotate = "../src/assets/RotateLayers.svg";
 
 
-const GeomanTools = ({ map, type = 'plan' }) => {
+const GeomanTools = ({ map, type = 'plan', onSaved }) => {
   useEffect(() => {
     if (!map) return;
 
@@ -63,6 +63,7 @@ const GeomanTools = ({ map, type = 'plan' }) => {
       });
 
       alert("Mission saved!");
+      onSaved()
     } catch (error) {
       alert("Error saving mission");
     }

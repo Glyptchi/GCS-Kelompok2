@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 const Cari = "../src/assets/Cari.svg";
 
-const MissionList = ({ onLoad, onRename, onDelete }) => {
+const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
   const [missions, setMissions] = useState([]);
   const [search, setSearch] = useState("");
 
@@ -15,7 +15,7 @@ const MissionList = ({ onLoad, onRename, onDelete }) => {
 
   useEffect(() => {
     fetchMissions();
-  }, []);
+  }, [refreshTrigger]);
 
   const handleRename = async (m) => {
     const newName = prompt("Rename mission:", m.name);
@@ -24,7 +24,7 @@ const MissionList = ({ onLoad, onRename, onDelete }) => {
     await fetch(`http://localhost:3000/missions/${m.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newName, data: JSON.parse(m.data) })
+      body: JSON.stringify({ name: newName, data: m.data })
     });
 
     fetchMissions();
@@ -56,7 +56,6 @@ const MissionList = ({ onLoad, onRename, onDelete }) => {
         alignItems: "center",
         width: "100%",
         maxWidth: "100%",
-        overflow: "hidden",
       }}>
         <img src={Cari} style={{
           marginLeft: 0,

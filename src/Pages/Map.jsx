@@ -97,7 +97,7 @@ const Map = () => {
       if (last) last.remove();
     };
 
-    {/*Keyboarding*/}
+    {/*Keyboarding*/ }
     const handleKey = (e) => {
 
       if (
@@ -118,39 +118,39 @@ const Map = () => {
         document.getElementById("gm-circle")?.click();
       } else if (e.key === "6") {
         document.getElementById("gm-circlemarker")?.click();
-      } else if (e.key === "T"|| e.key === "t") {
+      } else if (e.key === "T" || e.key === "t") {
         document.getElementById("gm-text")?.click();
-      } else if (e.key === "E"|| e.key === "e") {
+      } else if (e.key === "E" || e.key === "e") {
         document.getElementById("gm-edit")?.click();
-      } else if (e.key === "M"|| e.key === "m") {
+      } else if (e.key === "M" || e.key === "m") {
         document.getElementById("gm-drag")?.click();
       } else if (e.key === "Escape") {
 
-      const map = mapRef.current;
+        const map = mapRef.current;
         if (!map) return;
         map.pm.disableDraw();
         map.pm.disableGlobalEditMode();
         map.pm.disableGlobalDragMode();
         map.pm.disableGlobalRemovalMode();
-        
-      } else if (e.key === "0"|| e.key === ")") {
+
+      } else if (e.key === "0" || e.key === ")") {
         const map = mapRef.current;
         if (!map) return;
         map.setView([-7.771337528683765, 110.3774982677273], 17);
-      } else if (e.key === "+"|| e.key === "=") {
+      } else if (e.key === "+" || e.key === "=") {
         map.zoomIn();
-      } else if (e.key === "-"|| e.key === "_") {
+      } else if (e.key === "-" || e.key === "_") {
         map.zoomOut();
-      } else if (e.key === "C"|| e.key === "c") {
+      } else if (e.key === "C" || e.key === "c") {
         document.getElementById("gm-cut")?.click();
-      } else if (e.key === "R"|| e.key === "r") {
+      } else if (e.key === "R" || e.key === "r") {
         document.getElementById("gm-rotate")?.click();
-      } else if (e.key === "D"|| e.key === "d") {
+      } else if (e.key === "D" || e.key === "d") {
         document.getElementById("gm-remove")?.click();
       } else if ((e.key === "Z" || e.key === "z") && (e.ctrlKey || e.metaKey)) {
         undo();
       }
-  };
+    };
 
     window.addEventListener("keydown", handleKey);
 
@@ -167,44 +167,44 @@ const Map = () => {
     };
   }, []);
 
-const loadMission = (mission) => {
-  const map = mapRef.current;
+  const loadMission = (mission) => {
+    const map = mapRef.current;
 
-  // clear semua layer kecuali tile
-  map.eachLayer(layer => {
-    if (!layer._url) layer.remove();
-  });
+    // clear semua layer kecuali tile
+    map.eachLayer(layer => {
+      if (!layer._url) layer.remove();
+    });
 
-  const geojson = JSON.parse(mission.data);
+    const geojson = JSON.parse(mission.data);
 
-  L.geoJSON(geojson, {
-    onEachFeature: (feature, layer) => {
-      layer.addTo(map);
-    }
-  });
+    L.geoJSON(geojson, {
+      onEachFeature: (feature, layer) => {
+        layer.addTo(map);
+      }
+    });
 
-  alert("Loaded mission: " + mission.name);
-};
+    alert("Loaded mission: " + mission.name);
+  };
 
 
   return (
     <div className="app-layout">
       <div className="sidebar">
         <div className="switch-memory-sidebar">
-            <SwitchToSimulator />
-            {ready && (
-              <MissionList
-                onLoad={loadMission}
-              />
-            )}
-          
+          <SwitchToSimulator />
+          {ready && (
+            <MissionList
+              onLoad={loadMission}
+            />
+          )}
+
         </div>
         <LongLat coords={coords} />
         <div className="plan-menu">
           {ready && (
             <>
-            <GeomanTools map={mapRef.current} />
-          </>
+              <GeomanTools map={mapRef.current} type="plan" /> {/* sekarang ambil plan*/}
+            </>
           )}
         </div>
 

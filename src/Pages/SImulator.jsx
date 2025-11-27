@@ -9,7 +9,8 @@ import {polyline} from "leaflet/src/layer/index.js";
 import LongLat from "../components/LongLat.jsx";
 import SidebarSim from "../components/SidebarSim.jsx";  // 
 import SwitchToPlanner from "../components/SwitchToPlanner.jsx";
-
+import SimulatorMissionList from "../components/SimulatorMissionList.jsx";
+import LongLatSim from "../components/LongLat";
 
 const Simulator = () => {
     const mapContainer = useRef(null); // Ref to the DOM element

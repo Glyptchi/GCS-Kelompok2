@@ -87,9 +87,9 @@ const handleSave = async () => {
       <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers (R)" />
     </div>
 
-    <div className="gm-toolbar-bottom">
-      <img className="gm-icon" src="/src/assets/Save.svg" onClick={handleSave} />
-    </div>
+      <div className="gm-toolbar-bottom">
+        <img className="gm-icon" src="/src/assets/Save.svg" onClick={handleSave} />
+      </div>
 
     </div>
   );

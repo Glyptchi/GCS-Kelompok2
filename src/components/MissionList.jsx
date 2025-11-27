@@ -21,8 +21,6 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
     fetchMissions();
   }, [refreshTrigger]);
 
-
-
   const handleRename = async (m) => {
     const newName = prompt("Rename mission:", m.name);
     if (!newName) return;

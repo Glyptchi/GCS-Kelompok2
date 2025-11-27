@@ -10,7 +10,7 @@ import LongLat from "../components/LongLat.jsx";
 import SidebarSim from "../components/SidebarSim.jsx";  // 
 import SwitchToPlanner from "../components/SwitchToPlanner.jsx";
 import SimulatorMissionList from "../components/SimulatorMissionList.jsx";
-import LongLatSim from "../components/LongLatSim";
+import LongLatSim from "../components/LongLat";
 
 const Simulator = () => {
     const mapContainer = useRef(null); // Ref to the DOM element
@@ -323,7 +323,7 @@ const Simulator = () => {
                     )}
                 </div>
 
-                <LongLatSim coords={coords} />
+                <LongLat coords={coords} />
 
                 <div className="plan-menu">
                     <SidebarSim isRecording={isRecording} onToggleRecord={handleToggleRecord} />

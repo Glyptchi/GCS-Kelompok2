@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect } from "react";
 import "./GeomanTools.css";
 import { Marker } from "leaflet";
@@ -38,34 +39,30 @@ const GeomanTools = ({ map, type = 'plan', onSaved }) => {
     click("gm-rotate", () => map.pm.enableGlobalRotateMode());
   }, [map]);
 
-const handleSave = async () => {
-  if (!map) return;
+  const handleSave = async () => {
+    if (!map) return;
+    const layers = map.pm.getGeomanLayers();
 
-  const layers = map.pm.getGeomanLayers();
+    // convert semua layer ke GeoJSON
+    const geojson = layers.map(layer => layer.toGeoJSON());
+    const name = prompt("Nama mission?");
+    if (!name) return;
 
-  // convert semua layer ke GeoJSON
-  const geojson = layers.map(layer => layer.toGeoJSON());
-
-  const name = prompt("Nama mission?");
-
-  if (!name) return;
-
-  try {
-    await fetch("http://localhost:3000/missions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: name,
-        data: geojson
-      })
-    });
-
-    alert("Mission saved!");
-    onSaved()
-  } catch (error) {
-    alert("Error saving mission");
-  }
-};
+    try {
+      await fetch("http://localhost:3000/missions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name,
+          data: geojson
+        })
+      });
+      alert("Mission saved!");
+      onSaved()
+    } catch (error) {
+      alert("Error saving mission");
+    }
+  };
 
 
   return (
@@ -84,7 +81,7 @@ const handleSave = async () => {
       <img id="gm-drag" className="gm-icon" src={Drag} title="Drag Layers (M)" />
       <img id="gm-cut" className="gm-icon" src={Cut} title="Cut Layers (C)" />
       <img id="gm-remove" className="gm-icon" src={Remove} title="Delete Layers (D)" />
-      <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers (R)" />
+      <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers (R)" />
     </div>
 
       <div className="gm-toolbar-bottom">

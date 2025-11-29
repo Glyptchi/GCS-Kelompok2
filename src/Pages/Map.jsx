@@ -13,17 +13,6 @@ import MissionList from "../components/MissionList.jsx";
 
 export const mapRef = { current: null };
 
-// Fix issue default Leaflet marker not loading in Vite
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
-
 const Map = () => {
   const mapContainer = useRef(null);
 
@@ -32,21 +21,22 @@ const Map = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
+
     if (mapRef.current) return;
 
-    // 1️⃣ Create map
+    // 1 Create map
     const map = L.map(mapContainer.current, { zoomControl: false })
       .setView([-7.771337528683765, 110.3774982677273], 17);
 
-    // IMPORTANT: set mapRef **SEBELUM** yang lain
+    // set mapRef sebelum yang lain
     mapRef.current = map;
 
-    // 2️⃣ Add zoom control
+    // Add zoom control
     L.control.zoom({
       position: "bottomright",
     }).addTo(mapRef.current);
 
-    // 3️⃣ Add tile layer
+    // Add tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution: "© OpenStreetMap contributors",
     }).addTo(mapRef.current);

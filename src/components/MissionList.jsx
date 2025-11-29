@@ -47,6 +47,17 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
     if (onDelete) onDelete();
   };
 
+  const filteredMissions = missions
+  .filter(m =>
+    m.name.toLowerCase().includes(search.toLowerCase())
+  )
+  .sort((a, b) => {
+    const A = a.name.toLowerCase().indexOf(search.toLowerCase());
+    const B = b.name.toLowerCase().indexOf(search.toLowerCase());
+    return A - B;
+  });
+
+
   return (
 
     <div style={{
@@ -83,9 +94,9 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
 
       <h3 style={{ marginBottom: "10px", marginTop: "10px", }}>Mission Saves</h3>
 
-      {missions.map((m) => (
-  <div key={m.id}
-    style={{
+      {filteredMissions.map((m) => (
+      <div key={m.id}
+      style={{
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",

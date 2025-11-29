@@ -38,9 +38,11 @@ const Map = () => {
     }).addTo(mapRef.current);
 
     // Add tile layer
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
-    }).addTo(mapRef.current);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+            maxZoom: 18
+        }).addTo(mapRef.current);
 
     // 4 Remove Geoman default toolbar safely (tanpa ganggu mouse event)
     const style = document.createElement("style");
@@ -194,10 +196,6 @@ const Map = () => {
   const handleEdit = (mission) => {
     loadMission(mission);
     setEditingMission(mission);
-    // Optional: Enable edit mode automatically
-    // if (mapRef.current && mapRef.current.pm) {
-    //   mapRef.current.pm.enableGlobalEditMode();
-    // }
   };
 
   const handleUpdate = () => {

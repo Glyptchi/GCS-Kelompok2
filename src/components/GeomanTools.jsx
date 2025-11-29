@@ -47,30 +47,16 @@ const GeomanTools = ({ map, type = 'plan', onSaved, editingId, editingName, onUp
     // convert semua layer ke GeoJSON
     const geojson = layers.map(layer => {
       const json = layer.toGeoJSON();
-      // Check if it's a Circle (L.Circle) but NOT a CircleMarker (which Geoman also supports)
-      // Geoman usually treats CircleMarker as a different thing. 
-      // L.Circle extends L.CircleMarker, so we need to be careful.
-      // However, for this simple app, checking getRadius is key.
-      // Standard L.toGeoJSON doesn't save radius.
       if (layer instanceof L.Circle && !(layer instanceof L.CircleMarker && layer.options.radius < 100)) {
-        // Note: Leaflet treats Circle as a subclass of CircleMarker. 
-        // But usually CircleMarkers have small fixed pixel radius, Circles have meter radius.
-        // A safer check might be checking the pm options or just saving radius for both if needed.
-        // Let's just save radius if it exists.
         json.properties = json.properties || {};
         json.properties.radius = layer.getRadius();
-        // We can add a flag to distinguish
-        if (layer._mRadius) { // Internal leaflet property for Circle (meters) vs CircleMarker (pixels)
+        if (layer._mRadius) {
           json.properties.subType = "Circle";
         }
       }
-      // Actually, simpler approach:
       if (typeof layer.getRadius === 'function') {
         json.properties = json.properties || {};
         json.properties.radius = layer.getRadius();
-        // Distinguish Circle (meters) from CircleMarker (pixels)
-        // L.Circle uses meters. L.CircleMarker uses pixels.
-        // We can check the constructor name or prototype.
         if (Object.getPrototypeOf(layer) === L.Circle.prototype) {
           json.properties.layerType = "Circle";
         } else if (Object.getPrototypeOf(layer) === L.CircleMarker.prototype) {
@@ -80,13 +66,11 @@ const GeomanTools = ({ map, type = 'plan', onSaved, editingId, editingName, onUp
       return json;
     });
 
-    // If editing, use existing name as default
     const name = prompt("Nama mission?", editingName || "");
     if (!name) return;
 
     try {
       if (editingId) {
-        // UPDATE existing mission
         await fetch(`http://localhost:3000/missions/${editingId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -98,7 +82,6 @@ const GeomanTools = ({ map, type = 'plan', onSaved, editingId, editingName, onUp
         alert("Mission updated!");
         if (onUpdate) onUpdate();
       } else {
-        // CREATE new mission
         await fetch("http://localhost:3000/missions", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

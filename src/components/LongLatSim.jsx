@@ -43,14 +43,11 @@ const LongLatSim = ({ coords, recordingTime, distance, isRecording }) => {
             {/*Kompas*/}
             <div className='kompas'>
                 <button className='kompas-btn'
-                    onClick={() => {
-                        // We might need to pass mapInstance from parent if mapRef is not reliable here
-                        // But for now keeping similar logic to LongLat
-                        // Actually Simulator uses mapInstance ref, not mapRef export from Map.jsx
-                        // So this button might not work unless we pass a handler.
-                        // However, the user didn't complain about this button.
-                        // I'll leave it as is or better, accept a onCenter prop.
-                    }}>
+                        onClick={() => {
+                            const map = mapRef.current;
+                            if (!map) return;
+                            map.setView([-7.771337528683765, 110.3774982677273], 17);   // langsung panggil setView di sini
+                        }}>
                     <img src={Compass} alt='Kompas'></img>
                 </button>
             </div>

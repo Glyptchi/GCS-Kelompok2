@@ -2,18 +2,18 @@
 import React, { useEffect, useState } from "react";
 import "./MissionList.css"
 
-const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
+const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger, onEdit }) => {
   const [missions, setMissions] = useState([]);
   const [search, setSearch] = useState("");
 
   // Load missions dari backend, sekarang hanya ambil tipe plan
   const fetchMissions = async () => {
-  const res = await fetch("http://localhost:3000/missions");
-  const data = await res.json();
+    const res = await fetch("http://localhost:3000/missions");
+    const data = await res.json();
 
-  const withMenu = data.map(m => ({ ...m, showMenu: false }));
-  setMissions(withMenu);
-};
+    const withMenu = data.map(m => ({ ...m, showMenu: false }));
+    setMissions(withMenu);
+  };
 
 
   useEffect(() => {
@@ -47,14 +47,14 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
   };
 
   const filteredMissions = missions
-  .filter(m =>
-    m.name.toLowerCase().includes(search.toLowerCase())
-  )
-  .sort((a, b) => {
-    const A = a.name.toLowerCase().indexOf(search.toLowerCase());
-    const B = b.name.toLowerCase().indexOf(search.toLowerCase());
-    return A - B;
-  });
+    .filter(m =>
+      m.name.toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      const A = a.name.toLowerCase().indexOf(search.toLowerCase());
+      const B = b.name.toLowerCase().indexOf(search.toLowerCase());
+      return A - B;
+    });
 
 
   return (
@@ -73,20 +73,20 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
       <h3 className="ml-title">Mission Saves</h3>
 
       {filteredMissions.map((m) => (
-      <div key={m.id}
-      style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "8px 10px",
-      background: "#f7f8fa",
-      borderRadius: "6px",
-      marginBottom: "8px",
-      position: "relative"   // penting untuk menu floating
-    }}
-  >
-    {/* LOAD mission */}
-    <span style={{ cursor: "pointer"}} onClick={() => onLoad(m)}>{m.name}</span>
+        <div key={m.id}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "8px 10px",
+            background: "#f7f8fa",
+            borderRadius: "6px",
+            marginBottom: "8px",
+            position: "relative"   // penting untuk menu floating
+          }}
+        >
+          {/* LOAD mission */}
+          <span style={{ cursor: "pointer" }} onClick={() => onLoad(m)}>{m.name}</span>
 
           <div className="ml-dots">
             <span
@@ -110,7 +110,11 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
                   Rename
                 </div>
 
-                <div className="ml-menu-item">Edit</div>
+                <div className="ml-menu-item" onClick={() => {
+                  if (onEdit) onEdit(m);
+                  // Close menu
+                  setMissions(prev => prev.map(x => ({ ...x, showMenu: false })));
+                }}>Edit</div>
 
                 <div
                   className="ml-menu-item delete"

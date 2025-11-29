@@ -168,8 +168,8 @@ const Map = () => {
     });
 
     const geojson = typeof mission.data === "string"
-    ? JSON.parse(mission.data)
-    : mission.data;
+      ? JSON.parse(mission.data)
+      : mission.data;
 
     L.geoJSON(geojson, {
       onEachFeature: (feature, layer) => {
@@ -181,6 +181,26 @@ const Map = () => {
   };
 
 
+  const [editingMission, setEditingMission] = useState(null);
+
+  const handleEdit = (mission) => {
+    loadMission(mission);
+    setEditingMission(mission);
+    // Optional: Enable edit mode automatically
+    // if (mapRef.current && mapRef.current.pm) {
+    //   mapRef.current.pm.enableGlobalEditMode();
+    // }
+  };
+
+  const handleUpdate = () => {
+    setEditingMission(null);
+    setRefreshTrigger(prev => prev + 1);
+  };
+
+  const handleSaved = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
     <div className="app-layout">
       <div className="sidebar">
@@ -189,7 +209,8 @@ const Map = () => {
           {ready && (
             <MissionList
               onLoad={loadMission}
-              refreshTrigger = {refreshTrigger}
+              onEdit={handleEdit}
+              refreshTrigger={refreshTrigger}
             />
           )}
 
@@ -199,10 +220,13 @@ const Map = () => {
           {ready && (
             <>
               <GeomanTools
-              map={mapRef.current}
-              type="plan"
-              onSaved = {() => setRefreshTrigger(prev => prev + 1)}
-              /> 
+                map={mapRef.current}
+                type="plan"
+                onSaved={handleSaved}
+                editingId={editingMission?.id}
+                editingName={editingMission?.name}
+                onUpdate={handleUpdate}
+              />
             </>
           )}
         </div>

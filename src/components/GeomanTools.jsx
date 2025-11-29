@@ -17,7 +17,7 @@ const Remove = "../src/assets/RemoveLayers.svg";
 const Rotate = "../src/assets/RotateLayers.svg";
 
 
-const GeomanTools = ({ map, type = 'plan', onSaved }) => {
+const GeomanTools = ({ map, type = 'plan', onSaved, editingId, editingName, onUpdate }) => {
   useEffect(() => {
     if (!map) return;
 
@@ -45,21 +45,39 @@ const GeomanTools = ({ map, type = 'plan', onSaved }) => {
 
     // convert semua layer ke GeoJSON
     const geojson = layers.map(layer => layer.toGeoJSON());
-    const name = prompt("Nama mission?");
+
+    // If editing, use existing name as default
+    const name = prompt("Nama mission?", editingName || "");
     if (!name) return;
 
     try {
-      await fetch("http://localhost:3000/missions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name,
-          data: geojson
-        })
-      });
-      alert("Mission saved!");
-      onSaved()
+      if (editingId) {
+        // UPDATE existing mission
+        await fetch(`http://localhost:3000/missions/${editingId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            data: geojson
+          })
+        });
+        alert("Mission updated!");
+        if (onUpdate) onUpdate();
+      } else {
+        // CREATE new mission
+        await fetch("http://localhost:3000/missions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            data: geojson
+          })
+        });
+        alert("Mission saved!");
+        if (onSaved) onSaved();
+      }
     } catch (error) {
+      console.error(error);
       alert("Error saving mission");
     }
   };
@@ -67,22 +85,22 @@ const GeomanTools = ({ map, type = 'plan', onSaved }) => {
 
   return (
     <div className="gm-toolbar">
-    <div className="gm-toolbar-top">
-      <span style={{color : 'white', fontFamily : 'Helvetica', fontSize : '80%' }}>Draw</span>
-      <img id="gm-marker" className="gm-icon" src={DrawMarker} title="Draw Marker (1)"/>
-      <img id="gm-polyline" className="gm-icon" src={DrawPolyline} title="Draw Polyline (2)" />
-      <img id="gm-rectangle" className="gm-icon" src={DrawRectangle} title="Draw Rectangle (3)" />
-      <img id="gm-polygon" className="gm-icon" src={DrawPolygon} title="Draw Polygon (4)" />
-      <img id="gm-circle" className="gm-icon" src={DrawCircle} title="Draw Circle (5)" />
-      <img id="gm-circlemarker" className="gm-icon" src={DrawCircleMarker} title="Draw Circle Marker (6)" />
-      <span> </span>
-      <span style={{color : 'white', fontFamily : 'Helvetica', fontSize : '80%'}}>Tools</span>
-      <img id="gm-edit" className="gm-icon" src={Edit} title="Edit Layers (E)" />
-      <img id="gm-drag" className="gm-icon" src={Drag} title="Drag Layers (M)" />
-      <img id="gm-cut" className="gm-icon" src={Cut} title="Cut Layers (C)" />
-      <img id="gm-remove" className="gm-icon" src={Remove} title="Delete Layers (D)" />
-      <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers (R)" />
-    </div>
+      <div className="gm-toolbar-top">
+        <span style={{ color: 'white', fontFamily: 'Helvetica', fontSize: '80%' }}>Draw</span>
+        <img id="gm-marker" className="gm-icon" src={DrawMarker} title="Draw Marker (1)" />
+        <img id="gm-polyline" className="gm-icon" src={DrawPolyline} title="Draw Polyline (2)" />
+        <img id="gm-rectangle" className="gm-icon" src={DrawRectangle} title="Draw Rectangle (3)" />
+        <img id="gm-polygon" className="gm-icon" src={DrawPolygon} title="Draw Polygon (4)" />
+        <img id="gm-circle" className="gm-icon" src={DrawCircle} title="Draw Circle (5)" />
+        <img id="gm-circlemarker" className="gm-icon" src={DrawCircleMarker} title="Draw Circle Marker (6)" />
+        <span> </span>
+        <span style={{ color: 'white', fontFamily: 'Helvetica', fontSize: '80%' }}>Tools</span>
+        <img id="gm-edit" className="gm-icon" src={Edit} title="Edit Layers (E)" />
+        <img id="gm-drag" className="gm-icon" src={Drag} title="Drag Layers (M)" />
+        <img id="gm-cut" className="gm-icon" src={Cut} title="Cut Layers (C)" />
+        <img id="gm-remove" className="gm-icon" src={Remove} title="Delete Layers (D)" />
+        <img id="gm-rotate" className="gm-icon" src={Rotate} title="Rotate Layers (R)" />
+      </div>
 
       <div className="gm-toolbar-bottom">
         <img className="gm-icon" src="/src/assets/Save.svg" onClick={handleSave} />

@@ -5,12 +5,11 @@ import IconUAV from "../components/IconUAV.jsx";
 import 'leaflet/dist/leaflet.css';
 import '@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css';
 import '@geoman-io/leaflet-geoman-free';
-import {polyline} from "leaflet/src/layer/index.js";
-import LongLat from "../components/LongLat.jsx";
+import { polyline } from "leaflet/src/layer/index.js";
 import SidebarSim from "../components/SidebarSim.jsx";  // 
 import SwitchToPlanner from "../components/SwitchToPlanner.jsx";
 import SimulatorMissionList from "../components/SimulatorMissionList.jsx";
-import LongLatSim from "../components/LongLat";
+import LongLatSim from "../components/LongLatSim.jsx";
 
 const Simulator = () => {
     const mapContainer = useRef(null); // Ref to the DOM element
@@ -20,11 +19,14 @@ const Simulator = () => {
     // const untuk UAV
     const markerUAV = useRef(null);
     const keysPressed = useRef({});
-    const speedUAV = 0.00015;
+    // Adjusted speed: 20 m/s approx.
+    // 1 deg ~ 111,000 m. 20m = 0.00018 deg.
+    // 60 fps -> 0.00018 / 60 = 0.000003
+    const speedUAV = 0.000003;
     const currentPolyline = useRef(null);
     const isTrail = useRef(false);
     // const untuk gamepad
-    const gamepadMultiplier = 3.0; // variasi speed dari gamepad
+    const gamepadMultiplier = 5.0; // variasi speed dari gamepad (boost)
     const gamepadDeadzone = 0.1; //untuk menghindari jitter
     const gamepadButton = useRef(false);
 
@@ -33,11 +35,16 @@ const Simulator = () => {
     const recordedPath = useRef([]);
     const [refreshTrigger, setRefreshTrigger] = useState(0); // refresh list kalau sudah save
 
+    // Stats
+    const [recordingTime, setRecordingTime] = useState(0);
+    const [distance, setDistance] = useState(0);
+    const timerRef = useRef(null);
+
 
     useEffect(() => {
         if (mapInstance.current) return;
 
-        mapInstance.current = L.map(mapContainer.current, {zoomControl: false}).setView([-7.771337528683765, 110.3774982677273], 17);
+        mapInstance.current = L.map(mapContainer.current, { zoomControl: false }).setView([-7.771337528683765, 110.3774982677273], 17);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -47,7 +54,7 @@ const Simulator = () => {
             position: 'bottomright'
         }).addTo(mapInstance.current);
 
-        markerUAV.current = L.marker([-7.771337528683765, 110.3774982677273],{
+        markerUAV.current = L.marker([-7.771337528683765, 110.3774982677273], {
             icon: IconUAV(0),
             pmIgnore: true // biar di ignore move tool dari geoman
         }).addTo(mapInstance.current);
@@ -96,14 +103,7 @@ const Simulator = () => {
         const handleKeyDown = (e) => {
             keysPressed.current[e.key] = true;
 
-            // kode untuk memberi trail
-            if (e.code === 'Space') {
-                isTrail.current = !isTrail.current;
-
-                if (!isTrail.current) {
-                    currentPolyline.current = null;
-                }
-            } else if (e.key === '+' || e.key === '=') {
+            if (e.key === '+' || e.key === '=') {
                 mapInstance.current?.zoomIn();
             } else if (e.key === '-' || e.key === '_') {
                 mapInstance.current?.zoomOut();
@@ -124,6 +124,36 @@ const Simulator = () => {
             window.removeEventListener('keyup', handleKeyUp);
         }
     }, [])
+
+    // Timer for recording
+    useEffect(() => {
+        if (isRecording) {
+            timerRef.current = setInterval(() => {
+                setRecordingTime(prev => prev + 1);
+            }, 1000);
+        } else {
+            clearInterval(timerRef.current);
+        }
+        return () => clearInterval(timerRef.current);
+    }, [isRecording]);
+
+    // Need a ref to access handleToggleRecord inside the loop closure without stale closures issues
+    // Or just use a flag in ref to trigger it?
+    // Since handleToggleRecord changes state, calling it from loop (animation frame) is tricky if it depends on state.
+    // But handleToggleRecord uses isRecording state.
+    // The loop runs continuously. We can check gamepad button.
+    // If button pressed, we want to toggle.
+    // We can use a ref to store the "request to toggle" and a useEffect to react to it?
+    // Or just use a ref for isRecording in the loop?
+    // Actually, we can just call a function that checks the ref.
+    // Let's make isRecordingRef to track state inside loop.
+    const isRecordingRef = useRef(false);
+    useEffect(() => { isRecordingRef.current = isRecording; }, [isRecording]);
+
+    // We need to trigger the toggle function from the loop. 
+    // Since the loop is inside useEffect, it captures the initial handleToggleRecord.
+    // We can put handleToggleRecord in a ref.
+    const toggleRecordRef = useRef(null);
 
     useEffect(() => {
         let animationFrameId;
@@ -156,14 +186,16 @@ const Simulator = () => {
                 const isBtnPressed = gp.buttons[0].pressed;
 
                 if (isBtnPressed && !gamepadButton.current) {
-                    isTrail.current = !isTrail.current;
-                    if (!isTrail.current) currentPolyline.current = null;
+                    // Button 0 pressed (Cross/A) -> Toggle Recording
+                    if (toggleRecordRef.current) {
+                        toggleRecordRef.current();
+                    }
                 }
                 gamepadButton.current = isBtnPressed;
             }
 
             if (moveLatitude !== 0 || moveLongitude !== 0) {
-                const currentPos = markerUAV.current.getLatLng(moveLatitude, moveLongitude);
+                const currentPos = markerUAV.current.getLatLng();
                 const newPos = {
                     lat: currentPos.lat + moveLatitude,
                     lng: currentPos.lng + moveLongitude
@@ -197,11 +229,14 @@ const Simulator = () => {
                     currentPolyline.current.addLatLng(newPos);
                 }
 
-                if (isRecording) {
-                    // Only add if position changed significantly? For now just add every frame or maybe throttle?
-                    // Adding every frame might be too much data. Let's add.
-                    // To optimize, we could check distance from last point.
+                if (isRecordingRef.current) {
                     const lastPoint = recordedPath.current[recordedPath.current.length - 1];
+                    // Calculate distance
+                    if (lastPoint) {
+                        const dist = L.latLng(lastPoint[0], lastPoint[1]).distanceTo(L.latLng(newPos.lat, newPos.lng));
+                        setDistance(prev => prev + dist);
+                    }
+
                     if (!lastPoint || (lastPoint[0] !== newPos.lat || lastPoint[1] !== newPos.lng)) {
                         recordedPath.current.push([newPos.lat, newPos.lng]);
                     }
@@ -212,27 +247,38 @@ const Simulator = () => {
 
         loop();
 
-         return () => cancelAnimationFrame(animationFrameId);
-    }, [isRecording]) // Re-run loop if isRecording changes? No, loop uses ref. But we need to make sure loop sees latest isRecording state.
-    // Actually, isRecording is a state, so it will trigger re-render.
-    // The loop function closes over the scope. If we don't include isRecording in dependency, loop might see stale value?
-    // BUT, we are using requestAnimationFrame which calls loop recursively.
-    // The loop function is defined INSIDE useEffect.
-    // If we add isRecording to dependency, useEffect cleans up and restarts loop. This is fine.
+        return () => cancelAnimationFrame(animationFrameId);
+    }, []);
 
     const handleToggleRecord = async () => {
         if (!isRecording) {
             // START RECORDING
-            const confirmStart = confirm("Start recording new mission?");
-            if (!confirmStart) return;
-
             recordedPath.current = [];
+            setRecordingTime(0);
+            setDistance(0);
             setIsRecording(true);
-            // Optional: Enable trail automatically when recording?
-            // isTrail.current = true; 
+
+            // Auto marker / trail
+            isTrail.current = true;
+            // Reset polyline if needed
+            if (currentPolyline.current) {
+                currentPolyline.current.remove();
+                currentPolyline.current = null;
+            }
+
+            // Clear existing layers from loaded missions
+            if (mapInstance.current) {
+                mapInstance.current.eachLayer(layer => {
+                    if (!layer._url && layer !== markerUAV.current && layer !== currentPolyline.current) {
+                        mapInstance.current.removeLayer(layer);
+                    }
+                });
+            }
+
         } else {
             // STOP RECORDING
             setIsRecording(false);
+            isTrail.current = false;
 
             if (recordedPath.current.length === 0) {
                 alert("No path recorded.");
@@ -248,7 +294,10 @@ const Simulator = () => {
                 features: [
                     {
                         type: "Feature",
-                        properties: {},
+                        properties: {
+                            duration: recordingTime,
+                            distance: distance
+                        },
                         geometry: {
                             type: "LineString",
                             coordinates: recordedPath.current.map(p => [p[1], p[0]]) // GeoJSON is [lng, lat]
@@ -263,11 +312,7 @@ const Simulator = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         name: name,
-                        data: [geojson.features[0]], // Geoman usually saves array of features, or we can save FeatureCollection. 
-                        // Existing code expects array of features or similar. 
-                        // Map.jsx: L.geoJSON(geojson) -> geojson can be FeatureCollection or array.
-                        // GeomanTools saves: layers.map(l => l.toGeoJSON()) -> Array of Features.
-                        // So let's save Array of Features.
+                        data: [geojson.features[0]],
                         type: "simulator"
                     })
                 });
@@ -280,6 +325,11 @@ const Simulator = () => {
             }
         }
     };
+
+    // Update the ref so the loop calls the latest function
+    useEffect(() => {
+        toggleRecordRef.current = handleToggleRecord;
+    }, [isRecording, recordingTime, distance]); // Dependencies needed for closure
 
     const loadMission = (mission) => {
         const map = mapInstance.current;
@@ -302,32 +352,78 @@ const Simulator = () => {
             }
         });
 
+        // Move UAV to last point
+        const features = Array.isArray(geojson) ? geojson : (geojson.features || [geojson]);
+        if (features.length > 0) {
+            const lastFeature = features[0];
+
+            // Restore stats
+            if (lastFeature.properties) {
+                if (lastFeature.properties.duration !== undefined) {
+                    setRecordingTime(lastFeature.properties.duration);
+                }
+                if (lastFeature.properties.distance !== undefined) {
+                    setDistance(lastFeature.properties.distance);
+                }
+            }
+
+            if (lastFeature.geometry.type === "LineString") {
+                const coords = lastFeature.geometry.coordinates;
+                if (coords.length > 0) {
+                    const lastPoint = coords[coords.length - 1]; // [lng, lat]
+                    const newPos = { lat: lastPoint[1], lng: lastPoint[0] };
+
+                    markerUAV.current.setLatLng(newPos);
+                    setCoords({
+                        lat: newPos.lat.toFixed(6),
+                        lng: newPos.lng.toFixed(6)
+                    });
+                    map.panTo(newPos);
+
+                    // Calculate rotation if there are at least 2 points
+                    if (coords.length >= 2) {
+                        const prevPoint = coords[coords.length - 2];
+                        const dLng = lastPoint[0] - prevPoint[0];
+                        const dLat = lastPoint[1] - prevPoint[1];
+                        const headingRad = Math.atan2(dLng, dLat);
+                        const headingDeg = headingRad * (180 / Math.PI);
+                        markerUAV.current.setIcon(IconUAV(headingDeg));
+                    }
+                }
+            }
+        }
+
         alert("Loaded mission: " + mission.name);
     };
 
-return (
-  <div className="app-layout">
+    return (
+        <div className="app-layout">
 
-    <div className="sidebar">
+            <div className="sidebar">
 
-      <div className="switch-memory-sidebar">
+                <div className="switch-memory-sidebar">
                     <SwitchToPlanner />
                     {ready && (
                         <SimulatorMissionList onLoad={loadMission} refreshTrigger={refreshTrigger} />
                     )}
                 </div>
 
-      <LongLat coords={coords} />
+                <LongLatSim
+                    coords={coords}
+                    recordingTime={recordingTime}
+                    distance={distance}
+                    isRecording={isRecording}
+                />
 
-      <div className="plan-menu">
+                <div className="plan-menu">
                     <SidebarSim isRecording={isRecording} onToggleRecord={handleToggleRecord} />
                 </div>
 
-    </div>
+            </div>
 
-    <div ref={mapContainer} className="map-container" />
-  </div>
-);
+            <div ref={mapContainer} className="map-container" />
+        </div>
+    );
 
 };
 

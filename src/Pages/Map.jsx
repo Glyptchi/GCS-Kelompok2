@@ -172,6 +172,14 @@ const Map = () => {
       : mission.data;
 
     L.geoJSON(geojson, {
+      pointToLayer: (feature, latlng) => {
+        if (feature.properties && feature.properties.layerType === "Circle") {
+          return L.circle(latlng, { radius: feature.properties.radius });
+        } else if (feature.properties && feature.properties.layerType === "CircleMarker") {
+          return L.circleMarker(latlng, { radius: feature.properties.radius });
+        }
+        return L.marker(latlng);
+      },
       onEachFeature: (feature, layer) => {
         layer.addTo(map);
       }

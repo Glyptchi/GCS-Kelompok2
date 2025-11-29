@@ -281,50 +281,52 @@ const Simulator = () => {
             // STOP RECORDING
             setIsRecording(false);
             isTrail.current = false;
+        }
+    };
 
-            if (recordedPath.current.length === 0) {
-                alert("Tidak ada gerakan yang tersimpan!");
-                return;
-            }
+    const handleSave = async () => {
+        if (recordedPath.current.length === 0) {
+            alert("Tidak ada gerakan yang tersimpan!");
+            return;
+        }
 
-            const name = prompt("Berhenti Record. Nama save simulasi?");
-            if (!name) return;
+        const name = prompt("Simpan simulasi? Masukkan nama:");
+        if (!name) return;
 
-            // Buat GeoJSON LineString
-            const geojson = {
-                type: "FeatureCollection",
-                features: [
-                    {
-                        type: "Feature",
-                        properties: {
-                            duration: recordingTime,
-                            distance: distance
-                        },
-                        geometry: {
-                            type: "LineString",
-                            coordinates: recordedPath.current.map(p => [p[1], p[0]]) // GeoJSON is [lng, lat]
-                        }
+        // Buat GeoJSON LineString
+        const geojson = {
+            type: "FeatureCollection",
+            features: [
+                {
+                    type: "Feature",
+                    properties: {
+                        duration: recordingTime,
+                        distance: distance
+                    },
+                    geometry: {
+                        type: "LineString",
+                        coordinates: recordedPath.current.map(p => [p[1], p[0]]) // GeoJSON is [lng, lat]
                     }
-                ]
-            };
+                }
+            ]
+        };
 
-            try {
-                await fetch("http://localhost:3000/missions", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        name: name,
-                        data: [geojson.features[0]],
-                        type: "simulator"
-                    })
-                });
+        try {
+            await fetch("http://localhost:3000/missions", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name,
+                    data: [geojson.features[0]],
+                    type: "simulator"
+                })
+            });
 
-                alert("Simulasi tersimpan!");
-                setRefreshTrigger(prev => prev + 1); // Refresh list
-            } catch (err) {
-                console.error(err);
-                alert("Error saat menyimpan simulasi");
-            }
+            alert("Simulasi tersimpan!");
+            setRefreshTrigger(prev => prev + 1); // Refresh list
+        } catch (err) {
+            console.error(err);
+            alert("Error saat menyimpan simulasi");
         }
     };
 
@@ -415,7 +417,7 @@ const Simulator = () => {
                 />
 
                 <div className="plan-menu">
-                    <SidebarSim isRecording={isRecording} onToggleRecord={handleToggleRecord} />
+                    <SidebarSim isRecording={isRecording} onToggleRecord={handleToggleRecord} onSave={handleSave} />
                 </div>
 
             </div>

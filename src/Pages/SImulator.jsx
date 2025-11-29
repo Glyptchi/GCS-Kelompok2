@@ -260,13 +260,13 @@ const Simulator = () => {
 
             // Auto marker / trail
             isTrail.current = true;
-            // Reset polyline if needed
+            // Reset polyline ketika record
             if (currentPolyline.current) {
                 currentPolyline.current.remove();
                 currentPolyline.current = null;
             }
 
-            // Clear existing layers from loaded missions
+            // clear map dari load simulasi
             if (mapInstance.current) {
                 mapInstance.current.eachLayer(layer => {
                     if (!layer._url && layer !== markerUAV.current && layer !== currentPolyline.current) {
@@ -281,14 +281,14 @@ const Simulator = () => {
             isTrail.current = false;
 
             if (recordedPath.current.length === 0) {
-                alert("No path recorded.");
+                alert("Tidak ada gerakan yang tersimpan!");
                 return;
             }
 
-            const name = prompt("Stop recording. Save mission as?");
+            const name = prompt("Berhenti Record. Nama save simulasi?");
             if (!name) return;
 
-            // Create GeoJSON LineString
+            // Buat GeoJSON LineString
             const geojson = {
                 type: "FeatureCollection",
                 features: [
@@ -317,27 +317,24 @@ const Simulator = () => {
                     })
                 });
 
-                alert("Mission saved!");
+                alert("Simulasi tersimpan!");
                 setRefreshTrigger(prev => prev + 1); // Refresh list
             } catch (err) {
                 console.error(err);
-                alert("Error saving mission");
+                alert("Error saat menyimpan simulasi");
             }
         }
     };
 
-    // Update the ref so the loop calls the latest function
     useEffect(() => {
         toggleRecordRef.current = handleToggleRecord;
-    }, [isRecording, recordingTime, distance]); // Dependencies needed for closure
+    }, [isRecording, recordingTime, distance]);
 
     const loadMission = (mission) => {
         const map = mapInstance.current;
         if (!map) return;
 
-        // Clear existing Geoman layers (avoid removing UAV marker or tiles)
         map.eachLayer(layer => {
-            // Check if layer is not tile layer and not the UAV marker
             if (!layer._url && layer !== markerUAV.current && layer !== currentPolyline.current) {
                 // Also check if it's not the trail polyline if we want to keep trails
                 map.removeLayer(layer);
@@ -352,12 +349,12 @@ const Simulator = () => {
             }
         });
 
-        // Move UAV to last point
+        // Pindah UAV ke titik terakhir
         const features = Array.isArray(geojson) ? geojson : (geojson.features || [geojson]);
         if (features.length > 0) {
             const lastFeature = features[0];
 
-            // Restore stats
+            // Load status meter dan waktu
             if (lastFeature.properties) {
                 if (lastFeature.properties.duration !== undefined) {
                     setRecordingTime(lastFeature.properties.duration);
@@ -380,7 +377,7 @@ const Simulator = () => {
                     });
                     map.panTo(newPos);
 
-                    // Calculate rotation if there are at least 2 points
+                    // kembalikakan rotasi uav
                     if (coords.length >= 2) {
                         const prevPoint = coords[coords.length - 2];
                         const dLng = lastPoint[0] - prevPoint[0];
@@ -393,7 +390,7 @@ const Simulator = () => {
             }
         }
 
-        alert("Loaded mission: " + mission.name);
+        alert("Loaded simulasi: " + mission.name);
     };
 
     return (

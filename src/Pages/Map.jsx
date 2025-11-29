@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "../App.css";
@@ -41,7 +42,7 @@ const Map = () => {
       attribution: "© OpenStreetMap contributors",
     }).addTo(mapRef.current);
 
-    // 4️⃣ Remove Geoman default toolbar safely (tanpa ganggu mouse event)
+    // 4 Remove Geoman default toolbar safely (tanpa ganggu mouse event)
     const style = document.createElement("style");
     style.innerHTML = `
       .leaflet-pm-toolbar {
@@ -51,7 +52,7 @@ const Map = () => {
     `;
     document.head.appendChild(style);
 
-    // 5️⃣ Initialize PM controls (disable all, because kamu pakai toolbar custom)
+    // 5 Initialize PM controls (disable all, because kamu pakai toolbar custom)
     map.pm.addControls({
       drawMarker: false,
       drawCircleMarker: false,
@@ -66,7 +67,7 @@ const Map = () => {
       drawText: false,
     });
 
-    // 6️⃣ Mouse move listener → update koordinat
+    // 6 Mouse move listener → update koordinat
     mapRef.current.whenReady(() => {
       mapRef.current.on("mousemove", (e) => {
         setCoords({
@@ -201,7 +202,7 @@ const Map = () => {
               map={mapRef.current}
               type="plan"
               onSaved = {() => setRefreshTrigger(prev => prev + 1)}
-              /> {/* sekarang ambil plan*/}
+              /> 
             </>
           )}
         </div>

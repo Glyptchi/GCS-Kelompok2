@@ -1,0 +1,87 @@
+.ml-container {
+  width: 100%;
+  padding: 15px;
+  font-family: Helvetica;
+  color: #23315A;
+}
+
+/* Search bar */
+.ml-search {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+}
+
+.ml-search-icon {
+  width: 20px;
+  height: 20px;
+  margin-left: 0;
+}
+
+.ml-search-input {
+  border: none;
+  min-width: 0;
+  flex: 1;
+  margin-left: 3px;
+  background: transparent;
+  font-size: 16px;
+  outline: none;
+}
+
+/* Title */
+.ml-title {
+  margin: 10px 0;
+}
+
+/* Item list */
+.ml-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: #f7f8fa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.ml-item-name {
+  cursor: pointer;
+}
+
+/* Three dots */
+.ml-dots {
+  cursor: pointer;
+  font-size: 20px;
+  position: relative;
+}
+
+/* Dropdown menu */
+.ml-menu {
+  position: absolute;
+  right: 0;
+  top: 25px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  border-radius: 6px;
+  padding: 5px 0;
+  z-index: 10;
+  width: 110px;
+}
+
+.ml-menu-item {
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #23315A;
+  border-bottom: 1px solid #eee;
+}
+
+.ml-menu-item:last-child {
+  border-bottom: none;
+}
+
+.ml-menu-item.delete {
+  color: red;
+}

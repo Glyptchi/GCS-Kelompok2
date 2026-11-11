@@ -397,6 +397,10 @@ const Simulator = () => {
         alert("Loaded simulasi: " + mission.name);
     };
 
+    const handleResetView = () => {
+        mapInstance.current?.setView([-7.771337528683765, 110.3774982677273], 17);
+    };
+
     return (
         <div className="app-layout">
 
@@ -414,6 +418,7 @@ const Simulator = () => {
                     recordingTime={recordingTime}
                     distance={distance}
                     isRecording={isRecording}
+                    onResetView={handleResetView}
                 />
 
                 <div className="plan-menu">

@@ -1,16 +1,6 @@
-import React from 'react'
-import { mapRef } from '../Pages/Map';
-import Simulator from '../Pages/SImulator';
-
 const Compass = "../src/assets/Kompas.svg";
 
-const LongLat = ({coords}) => {
-  
-    const handleClick = () => {
-        const map = getMap();
-        if (!map) return;         // biar ga error kalau belum ready
-        map.setView([-7.771337528683765, 110.3774982677273], 17);
-    };
+const LongLat = ({coords, onResetView}) => {
 
   return (
 
@@ -31,11 +21,7 @@ const LongLat = ({coords}) => {
         {/*Kompas*/}
         <div className='kompas'>
             <button className='kompas-btn'
-                onClick={() => {
-                const map = mapRef.current;
-                if (!map) return;
-                map.setView([-7.771337528683765, 110.3774982677273], 17);   // langsung panggil setView di sini
-            }}>
+                onClick={onResetView}>
                 <img src={Compass} alt='Kompas'></img>
             </button>
         </div>

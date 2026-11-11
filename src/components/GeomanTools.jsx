@@ -17,8 +17,9 @@ const Remove = "../src/assets/RemoveLayers.svg";
 const Rotate = "../src/assets/RotateLayers.svg";
 
 
-const GeomanTools = ({ map, type = 'plan', onSaved, editingId, editingName, onUpdate }) => {
+const GeomanTools = ({ mapInstance, type = 'plan', onSaved, editingId, editingName, onUpdate }) => {
   useEffect(() => {
+    const map = mapInstance.current;
     if (!map) return;
 
     const click = (id, fn) => {
@@ -37,9 +38,10 @@ const GeomanTools = ({ map, type = 'plan', onSaved, editingId, editingName, onUp
     click("gm-cut", () => map.pm.enableGlobalCutMode());
     click("gm-remove", () => map.pm.enableGlobalRemovalMode());
     click("gm-rotate", () => map.pm.enableGlobalRotateMode());
-  }, [map]);
+  }, [mapInstance]);
 
   const handleSave = async () => {
+    const map = mapInstance.current;
     if (!map) return;
     const layers = map.pm.getGeomanLayers();
 

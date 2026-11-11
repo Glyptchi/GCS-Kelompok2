@@ -1,9 +1,6 @@
-import React from 'react';
-import { mapRef } from '../Pages/Map';
-
 const Compass = "../src/assets/Kompas.svg";
 
-const LongLatSim = ({ coords, recordingTime, distance, isRecording }) => {
+const LongLatSim = ({ coords, recordingTime, distance, isRecording, onResetView }) => {
 
     const formatTime = (seconds) => {
         const m = Math.floor(seconds / 60);
@@ -43,11 +40,7 @@ const LongLatSim = ({ coords, recordingTime, distance, isRecording }) => {
             {/*Kompas*/}
             <div className='kompas'>
                 <button className='kompas-btn'
-                        onClick={() => {
-                            const map = mapRef.current;
-                            if (!map) return;
-                            map.setView([-7.771337528683765, 110.3774982677273], 17);   // langsung panggil setView di sini
-                        }}>
+                        onClick={onResetView}>
                     <img src={Compass} alt='Kompas'></img>
                 </button>
             </div>

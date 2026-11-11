@@ -1,5 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "../App.css";
 
@@ -12,10 +11,9 @@ import SwitchToSimulator from "../components/SwitchToSimulator";
 import GeomanTools from "../components/GeomanTools";
 import MissionList from "../components/MissionList.jsx";
 
-export const mapRef = { current: null };
-
 const Map = () => {
-  const mapContainer = useRef(null);
+  const mapContainer = useRef(null); // Elemen div tempat peta ditampilkan
+  const mapInstance = useRef(null); // Instance peta Leaflet milik komponen ini
 
   const [ready, setReady] = useState(false);
   const [coords, setCoords] = useState({ lat: null, lng: null });
@@ -23,26 +21,25 @@ const Map = () => {
 
   useEffect(() => {
 
-    if (mapRef.current) return;
+    if (mapInstance.current) return;
 
     // 1 Create map
     const map = L.map(mapContainer.current, { zoomControl: false })
       .setView([-7.771337528683765, 110.3774982677273], 17);
 
-    // set mapRef sebelum yang lain
-    mapRef.current = map;
+    mapInstance.current = map;
 
     // Add zoom control
     L.control.zoom({
       position: "bottomright",
-    }).addTo(mapRef.current);
+    }).addTo(map);
 
     // Add tile layer
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
             maxZoom: 18
-        }).addTo(mapRef.current);
+        }).addTo(map);
 
     // 4 Remove Geoman default toolbar safely (tanpa ganggu mouse event)
     const style = document.createElement("style");
@@ -70,8 +67,8 @@ const Map = () => {
     });
 
     // 6 Mouse move listener → update koordinat
-    mapRef.current.whenReady(() => {
-      mapRef.current.on("mousemove", (e) => {
+    map.whenReady(() => {
+      map.on("mousemove", (e) => {
         setCoords({
           lat: e.latlng.lat.toFixed(6),
           lng: e.latlng.lng.toFixed(6),
@@ -80,7 +77,7 @@ const Map = () => {
     });
 
     //Force redraw after mount
-    setTimeout(() => {
+    const resizeTimer = setTimeout(() => {
       map.invalidateSize();
       setReady(true);
     }, 150);
@@ -91,7 +88,7 @@ const Map = () => {
       if (last) last.remove();
     };
 
-    {/*Keyboarding*/ }
+    // Keyboard shortcuts
     const handleKey = (e) => {
 
       if (
@@ -120,16 +117,12 @@ const Map = () => {
         document.getElementById("gm-drag")?.click();
       } else if (e.key === "Escape") {
 
-        const map = mapRef.current;
-        if (!map) return;
         map.pm.disableDraw();
         map.pm.disableGlobalEditMode();
         map.pm.disableGlobalDragMode();
         map.pm.disableGlobalRemovalMode();
 
       } else if (e.key === "0" || e.key === ")") {
-        const map = mapRef.current;
-        if (!map) return;
         map.setView([-7.771337528683765, 110.3774982677273], 17);
       } else if (e.key === "+" || e.key === "=") {
         map.zoomIn();
@@ -151,18 +144,18 @@ const Map = () => {
     // Cleanup
     return () => {
 
+      clearTimeout(resizeTimer);
       window.removeEventListener("keydown", handleKey);
-
-      if (mapRef.current) {
-        mapRef.current.off();
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
+      style.remove();
+      map.off();
+      map.remove();
+      mapInstance.current = null;
     };
   }, []);
 
   const loadMission = (mission) => {
-    const map = mapRef.current;
+    const map = mapInstance.current;
+    if (!map) return;
 
     // clear semua layer kecuali tile
     map.eachLayer(layer => {
@@ -190,6 +183,10 @@ const Map = () => {
     alert("Loaded mission: " + mission.name);
   };
 
+
+  const handleResetView = () => {
+    mapInstance.current?.setView([-7.771337528683765, 110.3774982677273], 17);
+  };
 
   const [editingMission, setEditingMission] = useState(null);
 
@@ -221,12 +218,12 @@ const Map = () => {
           )}
 
         </div>
-        <LongLat coords={coords} />
+        <LongLat coords={coords} onResetView={handleResetView} />
         <div className="plan-menu">
           {ready && (
             <>
               <GeomanTools
-                map={mapRef.current}
+                mapInstance={mapInstance}
                 type="plan"
                 onSaved={handleSaved}
                 editingId={editingMission?.id}

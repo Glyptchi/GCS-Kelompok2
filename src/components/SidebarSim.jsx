@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from "react";
+import startIcon from "../assets/Start.svg";
+import stopIcon from "../assets/Stop.svg";
+import saveIcon from "../assets/Save.svg";
 import "./Sidebar.css";
 
 const SidebarSim = ({ isRecording, onToggleRecord, onSave }) => {
@@ -11,7 +13,7 @@ const SidebarSim = ({ isRecording, onToggleRecord, onSave }) => {
         </span>
 
         <img
-          src={isRecording ? "/src/assets/Stop.svg" : "/src/assets/Start.svg"}
+          src={isRecording ? stopIcon : startIcon}
           alt={isRecording ? "Stop Recording" : "Start Recording"}
           className="sim-icon"
           title={isRecording ? "Stop Recording" : "Start Recording"}
@@ -22,7 +24,7 @@ const SidebarSim = ({ isRecording, onToggleRecord, onSave }) => {
         <div onClick={onSave} style={{ cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "5px" }}>
           <span style={{ color: 'white', fontFamily: 'Helvetica', fontSize: '80%' }}>SAVE</span>
           <img
-            src="/src/assets/Save.svg"
+            src={saveIcon}
             alt="Save Mission"
             className="sim-icon"
             title="Save Mission"

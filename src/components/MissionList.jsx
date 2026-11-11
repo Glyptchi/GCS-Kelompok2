@@ -1,6 +1,8 @@
-/* eslint-disable react-hooks/set-state-in-effect */
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./MissionList.css"
+import Cari from "../assets/Cari.svg";
+
+const API_BASE = (import.meta.env.VITE_BACKEND_URL || "http://localhost:3000").replace(/\/$/, "");
 
 const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger, onEdit }) => {
   const [missions, setMissions] = useState([]);
@@ -8,7 +10,7 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger, onEdit }) => 
 
   // Load missions dari backend, sekarang hanya ambil tipe plan
   const fetchMissions = async () => {
-    const res = await fetch("http://localhost:3000/missions");
+    const res = await fetch(`${API_BASE}/missions`);
     const data = await res.json();
 
     const withMenu = data.map(m => ({ ...m, showMenu: false }));
@@ -17,14 +19,24 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger, onEdit }) => 
 
 
   useEffect(() => {
-    fetchMissions();
+    const controller = new AbortController();
+    fetch(`${API_BASE}/missions`, { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((data) => setMissions(data.map((mission) => ({ ...mission, showMenu: false }))))
+      .catch((error) => {
+        if (error.name !== 'AbortError') console.error('Gagal memuat mission:', error);
+      });
+    return () => controller.abort();
   }, [refreshTrigger]);
 
   const handleRename = async (m) => {
     const newName = prompt("Rename mission:", m.name);
     if (!newName) return;
 
-    await fetch(`http://localhost:3000/missions/${m.id}`, {
+    await fetch(`${API_BASE}/missions/${m.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newName, data: m.data })
@@ -38,7 +50,7 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger, onEdit }) => 
     const ok = confirm(`Delete mission "${m.name}"?`);
     if (!ok) return;
 
-    await fetch(`http://localhost:3000/missions/${m.id}`, {
+    await fetch(`${API_BASE}/missions/${m.id}`, {
       method: "DELETE"
     });
 
@@ -60,7 +72,7 @@ const MissionList = ({ onLoad, onRename, onDelete, refreshTrigger, onEdit }) => 
   return (
     <div className="ml-container">
       <div className="ml-search">
-        <img src={"../src/assets/Cari.svg"} className="ml-search-icon" />
+        <img src={Cari} className="ml-search-icon" />
         <input
           type="text"
           placeholder="Cari plan..."

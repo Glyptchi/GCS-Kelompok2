@@ -1,4 +1,4 @@
-const Compass = "../src/assets/Kompas.svg";
+import Compass from "../assets/Kompas.svg";
 
 const LongLatSim = ({ coords, recordingTime, distance, isRecording, onResetView }) => {
 

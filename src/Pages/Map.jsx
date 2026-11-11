@@ -1,243 +1,105 @@
-import { useEffect, useRef, useState } from "react";
-import L from "leaflet";
-import "../App.css";
+import { useEffect, useState } from 'react';
+import L from 'leaflet';
+import map, { DEFAULT_CENTER, DEFAULT_ZOOM, planModeLG, disableMapTools } from '../baseMap/leaflet';
+import LongLat from '../components/LongLat';
+import GeomanTools from '../components/GeomanTools';
+import MissionList from '../components/MissionList';
 
-import "leaflet/dist/leaflet.css";
-import "@geoman-io/leaflet-geoman-free/dist/leaflet-geoman.css";
-import "@geoman-io/leaflet-geoman-free";
-
-import LongLat from "../components/LongLat";
-import SwitchToSimulator from "../components/SwitchToSimulator";
-import GeomanTools from "../components/GeomanTools";
-import MissionList from "../components/MissionList.jsx";
-
-const Map = () => {
-  const mapContainer = useRef(null); // Elemen div tempat peta ditampilkan
-  const mapInstance = useRef(null); // Instance peta Leaflet milik komponen ini
-
-  const [ready, setReady] = useState(false);
+export default function MapPage() {
   const [coords, setCoords] = useState({ lat: null, lng: null });
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [editingMission, setEditingMission] = useState(null);
 
   useEffect(() => {
-
-    if (mapInstance.current) return;
-
-    // 1 Create map
-    const map = L.map(mapContainer.current, { zoomControl: false })
-      .setView([-7.771337528683765, 110.3774982677273], 17);
-
-    mapInstance.current = map;
-
-    // Add zoom control
-    L.control.zoom({
-      position: "bottomright",
-    }).addTo(map);
-
-    // Add tile layer
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        {
-            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-            maxZoom: 18
-        }).addTo(map);
-
-    // 4 Remove Geoman default toolbar safely (tanpa ganggu mouse event)
-    const style = document.createElement("style");
-    style.innerHTML = `
-      .leaflet-pm-toolbar {
-        display: none !important;
-        pointer-events: none !important;
-      }
-    `;
-    document.head.appendChild(style);
-
-    // 5 Initialize PM controls (disable all, because kamu pakai toolbar custom)
-    map.pm.addControls({
-      drawMarker: false,
-      drawCircleMarker: false,
-      drawPolyline: false,
-      drawRectangle: false,
-      drawPolygon: false,
-      drawCircle: false,
-      editMode: false,
-      dragMode: false,
-      cutPolygon: false,
-      removalMode: false,
-      drawText: false,
-    });
-
-    // 6 Mouse move listener → update koordinat
-    map.whenReady(() => {
-      map.on("mousemove", (e) => {
-        setCoords({
-          lat: e.latlng.lat.toFixed(6),
-          lng: e.latlng.lng.toFixed(6),
-        });
-      });
-    });
-
-    //Force redraw after mount
-    const resizeTimer = setTimeout(() => {
-      map.invalidateSize();
-      setReady(true);
-    }, 150);
-
-    const undo = () => {
-      const layers = map.pm.getGeomanLayers();
-      const last = layers[layers.length - 1];
-      if (last) last.remove();
-    };
-
-    // Keyboard shortcuts
-    const handleKey = (e) => {
-
-      if (
-        document.activeElement.tagName === "INPUT" ||
-        document.activeElement.tagName === "TEXTAREA" ||
-        document.activeElement.isContentEditable
-      ) return;
-
-      if (e.key === "1") {
-        document.getElementById("gm-marker")?.click();
-      } else if (e.key === "2") {
-        document.getElementById("gm-polyline")?.click();
-      } else if (e.key === "3") {
-        document.getElementById("gm-rectangle")?.click();
-      } else if (e.key === "4") {
-        document.getElementById("gm-polygon")?.click();
-      } else if (e.key === "5") {
-        document.getElementById("gm-circle")?.click();
-      } else if (e.key === "6") {
-        document.getElementById("gm-circlemarker")?.click();
-      } else if (e.key === "T" || e.key === "t") {
-        document.getElementById("gm-text")?.click();
-      } else if (e.key === "E" || e.key === "e") {
-        document.getElementById("gm-edit")?.click();
-      } else if (e.key === "M" || e.key === "m") {
-        document.getElementById("gm-drag")?.click();
-      } else if (e.key === "Escape") {
-
-        map.pm.disableDraw();
-        map.pm.disableGlobalEditMode();
-        map.pm.disableGlobalDragMode();
-        map.pm.disableGlobalRemovalMode();
-
-      } else if (e.key === "0" || e.key === ")") {
-        map.setView([-7.771337528683765, 110.3774982677273], 17);
-      } else if (e.key === "+" || e.key === "=") {
+    function onMouseMove(event) {
+      setCoords({ lat: event.latlng.lat.toFixed(6), lng: event.latlng.lng.toFixed(6) });
+    }
+    function onKeyDown(event) {
+      if (event.target.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+      const shortcuts = {
+        '1': 'gm-marker', '2': 'gm-polyline', '3': 'gm-rectangle',
+        '4': 'gm-polygon', '5': 'gm-circle', '6': 'gm-circlemarker',
+        t: 'gm-text', e: 'gm-edit', m: 'gm-drag', c: 'gm-cut', r: 'gm-rotate', d: 'gm-remove',
+      };
+      const key = event.key.toLowerCase();
+      if ((event.ctrlKey || event.metaKey) && key === 'z') {
+        event.preventDefault();
+        const layers = planModeLG.getLayers();
+        if (layers.length) planModeLG.removeLayer(layers[layers.length - 1]);
+      } else if (event.ctrlKey || event.metaKey || event.altKey) {
+        return;
+      } else if (key === 'escape') {
+        disableMapTools();
+      } else if (key === '0' || key === ')') {
+        map.setView(DEFAULT_CENTER, DEFAULT_ZOOM);
+      } else if (key === '+' || key === '=') {
         map.zoomIn();
-      } else if (e.key === "-" || e.key === "_") {
+      } else if (key === '-' || key === '_') {
         map.zoomOut();
-      } else if (e.key === "C" || e.key === "c") {
-        document.getElementById("gm-cut")?.click();
-      } else if (e.key === "R" || e.key === "r") {
-        document.getElementById("gm-rotate")?.click();
-      } else if (e.key === "D" || e.key === "d") {
-        document.getElementById("gm-remove")?.click();
-      } else if ((e.key === "Z" || e.key === "z") && (e.ctrlKey || e.metaKey)) {
-        undo();
+      } else if (shortcuts[key]) {
+        document.getElementById(shortcuts[key])?.click();
       }
-    };
-
-    window.addEventListener("keydown", handleKey);
-
-    // Cleanup
+    }
+    map.on('mousemove', onMouseMove);
+    window.addEventListener('keydown', onKeyDown);
     return () => {
-
-      clearTimeout(resizeTimer);
-      window.removeEventListener("keydown", handleKey);
-      style.remove();
-      map.off();
-      map.remove();
-      mapInstance.current = null;
+      map.off('mousemove', onMouseMove);
+      window.removeEventListener('keydown', onKeyDown);
+      disableMapTools();
     };
   }, []);
 
-  const loadMission = (mission) => {
-    const map = mapInstance.current;
-    if (!map) return;
+  function loadMission(mission) {
+    try {
+      const geojson = typeof mission.data === 'string' ? JSON.parse(mission.data) : mission.data;
+      // Parse sebelum mengganti mission yang sudah ada.
+      const loaded = L.geoJSON(geojson, {
+        pointToLayer(feature, latlng) {
+          if (feature.properties?.layerType === 'Circle') {
+            return L.circle(latlng, { radius: feature.properties.radius });
+          }
+          if (feature.properties?.layerType === 'CircleMarker') {
+            return L.circleMarker(latlng, { radius: feature.properties.radius });
+          }
+          return L.marker(latlng);
+        },
+      });
+      disableMapTools();
+      planModeLG.clearLayers();
+      loaded.eachLayer((layer) => planModeLG.addLayer(layer));
+      setEditingMission(null);
+    } catch (error) {
+      console.error(error);
+      alert('Mission tidak dapat dimuat. Periksa format datanya.');
+    }
+  }
 
-    // clear semua layer kecuali tile
-    map.eachLayer(layer => {
-      if (!layer._url) layer.remove();
-    });
-
-    const geojson = typeof mission.data === "string"
-      ? JSON.parse(mission.data)
-      : mission.data;
-
-    L.geoJSON(geojson, {
-      pointToLayer: (feature, latlng) => {
-        if (feature.properties && feature.properties.layerType === "Circle") {
-          return L.circle(latlng, { radius: feature.properties.radius });
-        } else if (feature.properties && feature.properties.layerType === "CircleMarker") {
-          return L.circleMarker(latlng, { radius: feature.properties.radius });
-        }
-        return L.marker(latlng);
-      },
-      onEachFeature: (feature, layer) => {
-        layer.addTo(map);
-      }
-    });
-
-    alert("Loaded mission: " + mission.name);
-  };
-
-
-  const handleResetView = () => {
-    mapInstance.current?.setView([-7.771337528683765, 110.3774982677273], 17);
-  };
-
-  const [editingMission, setEditingMission] = useState(null);
-
-  const handleEdit = (mission) => {
+  function handleEdit(mission) {
     loadMission(mission);
     setEditingMission(mission);
-  };
+  }
 
-  const handleUpdate = () => {
+  function handleSaved() {
     setEditingMission(null);
-    setRefreshTrigger(prev => prev + 1);
-  };
-
-  const handleSaved = () => {
-    setRefreshTrigger(prev => prev + 1);
-  };
+    setRefreshTrigger((previous) => previous + 1);
+  }
 
   return (
     <div className="app-layout">
       <div className="sidebar">
         <div className="switch-memory-sidebar">
-          <SwitchToSimulator />
-          {ready && (
-            <MissionList
-              onLoad={loadMission}
-              onEdit={handleEdit}
-              refreshTrigger={refreshTrigger}
-            />
-          )}
-
+          <MissionList onLoad={loadMission} onEdit={handleEdit} refreshTrigger={refreshTrigger} />
         </div>
-        <LongLat coords={coords} onResetView={handleResetView} />
         <div className="plan-menu">
-          {ready && (
-            <>
-              <GeomanTools
-                mapInstance={mapInstance}
-                type="plan"
-                onSaved={handleSaved}
-                editingId={editingMission?.id}
-                editingName={editingMission?.name}
-                onUpdate={handleUpdate}
-              />
-            </>
-          )}
+          <GeomanTools
+            onSaved={handleSaved}
+            editingId={editingMission?.id}
+            editingName={editingMission?.name}
+            onUpdate={handleSaved}
+          />
         </div>
-
       </div>
-      <div ref={mapContainer} className="map-container" />
+      <LongLat coords={coords} onResetView={() => map.setView(DEFAULT_CENTER, DEFAULT_ZOOM)} />
     </div>
   );
-};
-
-export default Map;
+}

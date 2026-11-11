@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-const Cari = "../src/assets/Cari.svg";
+import Cari from "../assets/Cari.svg";
+
+const API_BASE = (import.meta.env.VITE_BACKEND_URL || "http://localhost:3000").replace(/\/$/, "");
 
 const SimulatorMissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) => {
   const [missions, setMissions] = useState([]);
@@ -8,20 +10,30 @@ const SimulatorMissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) =>
 
   // Load missions dari backend (type=simulator)
   const fetchMissions = async () => {
-    const res = await fetch("http://localhost:3000/missions?type=simulator");
+    const res = await fetch(`${API_BASE}/missions?type=simulator`);
     const data = await res.json();
     setMissions(data);
   };
 
   useEffect(() => {
-    fetchMissions();
+    const controller = new AbortController();
+    fetch(`${API_BASE}/missions?type=simulator`, { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then((data) => setMissions(data.map((mission) => ({ ...mission, showMenu: false }))))
+      .catch((error) => {
+        if (error.name !== 'AbortError') console.error('Gagal memuat mission:', error);
+      });
+    return () => controller.abort();
   }, [refreshTrigger]);
 
   const handleRename = async (m) => {
     const newName = prompt("Rename mission:", m.name);
     if (!newName) return;
 
-    await fetch(`http://localhost:3000/missions/${m.id}`, {
+    await fetch(`${API_BASE}/missions/${m.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: newName, data: JSON.parse(m.data) })
@@ -35,7 +47,7 @@ const SimulatorMissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) =>
     const ok = confirm(`Delete mission "${m.name}"?`);
     if (!ok) return;
 
-    await fetch(`http://localhost:3000/missions/${m.id}`, {
+    await fetch(`${API_BASE}/missions/${m.id}`, {
       method: "DELETE"
     });
 
@@ -80,7 +92,7 @@ const SimulatorMissionList = ({ onLoad, onRename, onDelete, refreshTrigger }) =>
 
       <h3 style={{ marginBottom: "10px", marginTop: "10px", }}>Simulator Saves</h3>
 
-      {missions.map((m) => (
+      {missions.filter((mission) => mission.name.toLowerCase().includes(search.toLowerCase())).map((m) => (
         <div key={m.id}
           style={{
             display: "flex",
